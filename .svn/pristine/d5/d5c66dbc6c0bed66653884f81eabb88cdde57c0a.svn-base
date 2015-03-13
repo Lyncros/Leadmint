@@ -1,0 +1,121 @@
+<div id="login">
+	<div class="hero-unit">
+
+	<form class="" id="form-login" method="post">
+		<h1><?php lang_line('user_login'); ?></h1>
+		<?php if($login_email) { ?>
+		<p class="error"><?php lang_line('user_invalid_login'); ?></p>
+		<?php } ?>
+		
+		<input type="text" class="span4 required email" name="email" id="login-email" value="<?php echo $login_email; ?>" placeholder="<?php lang_line('user_email'); ?>"> 
+
+		<input type="password" class="span4 required" name="password" id="" placeholder="<?php lang_line('user_password'); ?>">
+		<label class="checkbox">
+			<input type="checkbox" name="remember"> <?php lang_line('user_rememberme'); ?>
+		</label>		
+
+		<a class="btn" id="open-modal" href="#" ><?php lang_line('user_forgot_password'); ?>?</a>
+		<button class="btn btn-success span2" type="submit"><?php lang_line('user_submit'); ?></button>
+
+	</form>
+	
+	<div class="modal hide" id="forgot-modal">
+	    <div class="modal-header">
+	    	<a class="close" data-dismiss="modal">×</a>
+	    	<h3><?php lang_line('user_forgot_password_header'); ?></h3>
+	    </div>
+	    <form id="form-forgot" method="post">
+		    <div class="modal-body">
+		    	<div>
+		    		<?php lang_line('user_forgot_password_warning'); ?>
+		    	</div>
+		    	<input type="text" name="forgot-email" class="required email" id="forgot-email" />
+		    </div>
+		    <div class="modal-footer">
+		    	<a data-dismiss="modal" class="btn" href="#"><?php lang_line('front_form_cancel'); ?></a>
+		    	<a href="#" class="btn btn-primary" id="forgot-modal-submit"><?php lang_line('user_reset_my_password'); ?></a>
+		    </div>
+	    </form>
+    </div>
+    
+    <div class="modal hide" id="forgot-ok-modal">
+	    <div class="modal-header">
+	    	<a class="close" data-dismiss="modal">×</a>
+	    	<h3><?php lang_line('user_forgot_password_sent_header'); ?></h3>
+	    </div>
+	    <form id="form-forgot" method="post">
+		    <div class="modal-body">
+		    	<div>
+		    		<?php lang_line('user_forgot_password_sent_explain'); ?>
+		    	</div>
+		    	
+		    </div>
+		    <div class="modal-footer">
+		    	<a data-dismiss="modal" class="btn btn-success" href="#"><?php lang_line('front_form_close'); ?></a>
+		    </div>
+	    </form>
+    </div>
+  </div>
+</div>
+	<script type="text/javascript">
+		
+	
+		$.validator.messages.required = '<?php lang_line('front_error_required'); ?>';
+		$.validator.messages.email = '<?php lang_line('front_error_email'); ?>';
+		$.validator.messages.unique_email = '<?php lang_line('front_error_email_exists'); ?>';
+		$.validator.messages.equalTo = '<?php lang_line('front_error_password_match'); ?>';
+
+		$('#form-login').validate({
+			errorElement: "p",
+			errorClass: "error",
+			validClass: "success",
+		});
+		
+		$('#form-forgot').validate({
+			errorElement: "p",
+			errorClass: "error",
+			validClass: "success",
+		});
+
+
+		$('#open-modal').click(function(e) {
+			e.preventDefault();
+			$('#forgot-email').val($('#login-email').val());
+			$('#forgot-modal').modal();
+		})
+		
+		$('a[data-dismiss="modal"]').click(function(e) {
+			e.preventDefault();
+			$(this).parents('.modal').modal('hide');
+		})
+		
+		$('#forgot-modal-submit').click(function(e) {
+			e.preventDefault();
+			if( ! $('#form-forgot').validate().form()) return false;
+			
+			$.post(
+				'<?php echo base_url('user/forgot_password'); ?>',
+				{'email':$('#forgot-email').val()},
+				function(rsp)
+				{
+					var json = $.parseJSON(rsp);
+					if(json.status == 'error')
+					{
+						var p = '<p for="forgot-email" generated="true" class="error" style="display: block;">'+json.message+'</p>';
+						$('#forgot-email').after(p);	
+					}
+					else
+					{
+						$('#forgot-modal').modal('hide');
+						$('#forgot-ok-modal').modal('show');
+					}
+				}
+			)
+		})
+		
+	
+	</script>
+	
+	
+	
+	

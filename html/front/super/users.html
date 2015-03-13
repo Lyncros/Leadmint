@@ -1,0 +1,45 @@
+	<h1><?php lang_line('super_users'); ?></h1>
+	
+	<form class="well form-inline" action="<?php echo lang_site_url('super/users'); ?>" method="post">
+		
+		<input type="text" class="input-medium" name="filter_firstname"  placeholder="<?php lang_line('front_filter_firstname'); ?>" value="<?php echo $filters->filter_firstname; ?>">
+		<input type="text" class="input-medium" name="filter_lastname"  placeholder="<?php lang_line('front_filter_lastname'); ?>" value="<?php echo $filters->filter_lastname; ?>">
+		<input type="text" class="input-medium" name="filter_email"  placeholder="<?php lang_line('front_filter_email'); ?>" value="<?php echo $filters->filter_email; ?>">
+		
+		<label class="checkbox">
+			<input type="checkbox" name="filter_active" <?php echo $filters->filter_active ? 'checked="checked"' : ''; ?>> <?php lang_line('front_filter_show_inactive_users') ?>
+		</label>
+		<label class="checkbox">
+			<input type="checkbox" name="filter_is_super" <?php echo $filters->filter_is_super ? 'checked="checked"' : ''; ?>> <?php lang_line('front_filter_super_only') ?>
+		</label>
+    	<button type="submit" class="btn btn-primary"><?php lang_line('front_filter_filter') ?></button>
+    	<a href="<?php echo lang_site_url('super/users'); ?>" class="btn"><?php lang_line('front_filter_reset') ?></a>
+    </form>
+    
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th><?php lang_line('user_firstname'); ?></th>
+				<th><?php lang_line('user_lastname'); ?></th>
+				<th><?php lang_line('user_email'); ?></th>
+				<th><?php lang_line('user_created'); ?></th>
+				<th><?php lang_line('user_active'); ?></th>
+				<th><?php lang_line('user_is_super'); ?></th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php foreach($users->query_records as $row) { ?>
+			<tr>
+				<td><?php echo $row->id; ?></td>
+				<td><a href="#"><?php echo $row->firstname; ?></a></td>
+				<td><?php echo $row->lastname ?></td>
+				<td><?php echo $row->email; ?></td>
+				<td><?php echo date(lang_line('front_format_date',false), strtotime($row->created_at)); ?></td>
+				<td class="toggle-valid"><?php echo $row->active ? '<a href="'.lang_base_url('super/toggle_user_active/'.$row->id).'"><i class="icon-ok"></i>'.lang_line('super_set_inactive',false).'</a>' : '<a href="'.lang_base_url('super/toggle_user_active/'.$row->id).'"><i class="icon-remove"></i>'.lang_line('super_set_active',false).'</a>'; ?></td>
+				<td class="toggle-valid"><?php echo $row->is_super ? '<a href="'.lang_base_url('super/toggle_user_super/'.$row->id).'"><i class="icon-ok"></i>'.lang_line('super_unset_super',false).'</a>' : '<a href="'.lang_base_url('super/toggle_user_super/'.$row->id).'"><i class="icon-remove"></i>'.lang_line('super_set_super',false).'</a>'; ?></td>
+			</tr>
+		<?php } ?>
+		</tbody>
+	</table>
+	<?php echo $pagination; ?>

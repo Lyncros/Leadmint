@@ -1,0 +1,584 @@
+<div class="tabbable test">
+	
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#tab-1" data-toggle="tab" id="tab-1-select"><span class="badge">1</span> - <?php lang_line('app_campaign_details'); ?></a></li>
+		<li><a href="#tab-2" data-toggle="tab" class="<?php echo $props->tab_1_configured->value ? '' : 'disabled'; ?>" id="tab-2-select"><span class="badge">2</span> - <?php lang_line('app_timeline_rules'); ?></a></li>
+		
+		<li><a href="#tab-3" data-toggle="tab" class="<?php echo $props->tab_2_configured->value ? '' : 'disabled'; ?>" id="tab-3-select"><span class="badge">3</span> - <?php lang_line('app_design'); ?></a></li>
+		
+		<?php if(! $campaign->is_payed()) { ?>
+		<li><a href="#tab-4" data-toggle="tab" class="<?php echo $props->tab_3_configured->value ? '' : 'disabled'; ?>" id="tab-4-select"><span class="badge">4</span> - <?php lang_line('app_pay'); ?></a></li>
+		<?php } else { ?>
+		<li><a href="#tab-5" data-toggle="tab" class="<?php echo $props->tab_3_configured->value ? '' : 'disabled'; ?>" id="tab-5-select"><span class="badge">4</span> - <?php lang_line('app_publish'); ?></a></li>
+		<li><a href="#tab-6" data-toggle="tab" id="tab-6-select"><span class="badge">5</span> - <?php lang_line('app_users_winners'); ?></a></li>
+		<?php } ?>
+	</ul>
+	
+	<div class="tab-content"> 
+		<div class="tab-pane active" id="tab-1">
+
+		    <form class="form-horizontal well" id="form-details" method="post" action="<?php echo lang_base_url('app/save/'.$campaign->id); ?>">
+		    	<input type="hidden" name="tab_1_configured" value="1" />
+				<fieldset>
+				
+					<legend><?php lang_line('app_campaign_details_help'); ?></legend>
+						
+						<!-- Features -->
+						<div class="control-group alert-success no-version-hide" id="app_features">
+							<label class="control-label"> <a data-content="<?php echo $props->app_features->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_features->label; ?>"></a> <?php echo $props->app_features->label; ?></label>
+							<div class="controls">
+								<?php foreach($campaign->application->versions as $version => $price) { 
+									$data = array(
+									    'name'        => 'app_features',
+									    'id'          => 'app_feature_'.$version,
+									    'value'       => $version,
+									    'checked'     => $props->app_features->value == $version,
+									    'price'       => $price,
+								    );
+								
+								?>
+								<label class="radio inline">
+									<?php echo form_radio($data); ?>
+                					<?php lang_line($version); ?>
+              					</label>
+              					<?php } ?>
+							</div>
+						</div>
+						
+						<!-- Title -->
+						<div class="control-group <?php echo $props->app_title->css_versions(); ?>">
+							<label class="control-label" for="app_title"> <a data-content="<?php echo $props->app_title->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_title->label; ?>"></a> <?php echo $props->app_title->label; ?></label>
+
+							<div class="controls">
+								<input type="text" class="input-xlarge required" id="app_title" name="app_title" value="<?php echo $props->app_title->value; ?>">
+							</div>
+						</div>
+						
+						<!-- Description -->
+						<div class="control-group <?php echo $props->app_description->css_versions(); ?>">
+							<label class="control-label" for="app_description"> <a data-content="<?php echo $props->app_description->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_description->label; ?>"></a> <?php echo $props->app_description->label; ?></label>
+
+							<div class="controls">
+								<textarea class="input-xlarge required" id="app_description" name="app_description"><?php echo $props->app_description->value; ?></textarea>
+							</div>
+						</div>
+						
+						<!-- Language -->
+						<div class="control-group <?php echo $props->app_language->css_versions(); ?>">
+							<label class="control-label" for="app_language"> <a data-content="<?php echo $props->app_language->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_language->label; ?>"></a> <?php echo $props->app_language->label; ?></label>
+
+							<div class="controls">
+								<input type="hidden" name="app_language" id="app_language" value="<?php echo $props->app_language->value; ?>">
+								<?php echo $language_select; ?> <!-- <?php echo $country_select; ?> -->
+							</div>
+						</div>
+						
+						<!-- Timer -->
+						<div class="control-group <?php echo $props->app_timer->css_versions(); ?>">
+							<label class="control-label" for="app_timer"> <a data-content="<?php echo $props->app_timer->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_timer->label; ?>"></a> <?php echo $props->app_timer->label; ?></label>
+							<div class="controls">
+								<label class="checkbox inline">
+									<?php 
+										$data = array(
+										    'name'        => 'app_timer',
+										    'id'          => 'app_timer',
+										    'value'       => 1,
+										    'checked'     => $props->app_timer->value 
+									    );
+										echo form_checkbox($data);
+									?>	
+              					</label>
+							</div>
+							<div class="upgrade-text">
+								<?php lang_line('app_available_in_full_version'); ?>
+							</div>
+						</div>
+						
+						
+						
+						<!-- Embedded Wall -->
+						<div class="control-group <?php echo $props->app_embedded_wall->css_versions(); ?>">
+							<label class="control-label" for="app_embedded_wall"> <a data-content="<?php echo $props->app_embedded_wall->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_embedded_wall->label; ?>"></a> <?php echo $props->app_embedded_wall->label; ?></label>
+							<div class="controls">
+								<label class="checkbox inline">
+									<?php 
+										$data = array(
+										    'name'        => 'app_embedded_wall',
+										    'id'          => 'app_embedded_wall',
+										    'value'       => 1,
+										    'checked'     => $props->app_embedded_wall->value 
+									    );
+										echo form_checkbox($data);
+									?>	
+              					</label>
+							</div>
+							<div class="upgrade-text">
+								<?php lang_line('app_available_in_full_version'); ?>
+							</div>
+						</div>
+						
+						<!-- Google analytics -->
+						<div class="control-group <?php echo $props->google_analytics->css_versions(); ?>">
+							<label class="control-label" for="google_analytics"> 
+								<a data-content="<?php echo $props->google_analytics->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->google_analytics->label; ?>"></a> 
+								<?php echo $props->google_analytics->label; ?>
+							</label>
+							<div class="controls">
+								<input type="text" class="input-xlarge" id="google_analytics" name="google_analytics" value="<?php echo $props->google_analytics->value; ?>">
+							</div>
+							<div class="upgrade-text">
+								<?php lang_line('app_available_in_full_version'); ?>
+							</div>
+						</div>
+						
+						<!-- Embedded Wall Title -->
+						<div class="control-group <?php echo $props->app_wall_title->css_versions(); ?>">
+							<label class="control-label" for="app_wall_title"> <a data-content="<?php echo $props->app_wall_title->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_wall_title->label; ?>"></a> <?php echo $props->app_wall_title->label; ?></label>
+
+							<div class="controls">
+								<input type="text" class="input-xlarge required" id="app_wall_title" name="app_wall_title" value="<?php echo $props->app_wall_title->value; ?>">
+							</div>
+						</div>
+						
+						<!-- Embedded Wall Description -->
+						<div class="control-group <?php echo $props->app_wall_description->css_versions(); ?>">
+							<label class="control-label" for="app_wall_description"> 
+								<a data-content="<?php echo $props->app_wall_description->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_wall_description->label; ?>"></a> 
+								<?php echo $props->app_wall_description->label; ?>
+							</label>
+
+							<div class="controls">
+								<textarea class="input-xlarge required" id="app_wall_description" name="app_wall_description"><?php echo $props->app_wall_description->value; ?></textarea>
+							</div>
+						</div>
+						
+						<!-- Avatar -->
+						<div class="control-group <?php echo $props->app_avatar->css_versions(); ?>">
+							<label class="control-label" for="app_avatar"> 
+								<a data-content="<?php echo $props->app_avatar->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_avatar->label; ?>"></a> 
+								<?php echo $props->app_avatar->label; ?>
+							</label>
+							<div class="controls">
+								<input type="hidden" id="app_avatar" name="app_avatar" value="<?php echo $props->app_avatar->value; ?>" >
+								<div id="app_avatar_holder">
+								
+								<?php if($props->app_avatar->value) { ?>
+									<img src="<?php echo (SUBFOLDER .'user_files/'.$campaign->id.'/'.$props->app_avatar->value); ?>" >
+								<?php } ?>
+								</div>
+								<a rel="#app_avatar" class="open-modal-media" ><?php lang_line('app_select_image'); ?></a>
+							</div>
+						</div>
+						
+						<!-- Facebook agreement -->
+						<div class="control-group <?php echo $props->app_title->css_versions(); ?>">
+							<label class="control-label" for="fb_agreement"> 
+								&nbsp;
+							</label>
+							<div class="controls">
+								<label class="radio inline">
+									<?php 
+										$data = array(
+										    'name'        => 'fb_agreement',
+										    'id'          => 'fb_agreement',
+										    'value'       => 1,
+										    'checked'     => $props->fb_agreement->value,
+										    'class' => 'required'
+									    );
+										echo form_checkbox($data);
+									?>	
+									<a href="https://www.facebook.com/legal/terms" target="_blank"><?php echo $props->fb_agreement->label; ?></a>
+              					</label>
+							</div>
+						</div>
+						
+						
+						<div class="form-actions">
+			            	<a class="btn preview"><?php lang_line('app_preview'); ?></a>
+			            	<a class="btn btn-primary save-form" data-loading-text="<?php lang_line('app_please_wait'); ?>" id="form-details-submit"><?php lang_line('app_save_continue'); ?></a>
+			          	</div>
+				</fieldset>
+			</form>
+			
+			
+		</div>
+		
+		<!-- TIMELINE TAB -->
+		<div class="tab-pane" id="tab-2">
+			<form class="form-horizontal well" id="form-timeline" method="post" action="<?php echo lang_base_url('app/save/'.$campaign->id); ?>">
+				<input type="hidden" name="tab_2_configured" value="1" />
+				<fieldset>
+					<legend><?php lang_line('app_timeline_rules_help'); ?></legend>
+					
+					<!-- Campaign Dates -->
+					<div class="control-group <?php echo $props->app_title->css_versions(); ?>">
+							
+						<label class="control-label" for="app_title"> 
+						
+							<a data-content="<?php lang_line('app_campaign_timeline_help') ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php lang_line('app_campaign_timeline_label') ?>"></a> 
+							<?php lang_line('app_campaign_timeline_label') ?>
+						
+						</label>
+
+						<div class="controls inline">
+							<label class="inline">
+								<a data-content="<?php echo $props->app_date_teaser->help; ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_date_teaser->label; ?>"></a> 
+								<?php echo $props->app_date_teaser->label; ?>
+							</label>
+							
+							<!--
+<input type="hidden" name="app_date_teaser" id="app_date_teaser" value="<?php echo $props->app_date_teaser->value; ?>" >
+							<a href="#" class="open-modal-calendar icon-calendar" class="open-modal-calendar"></a>
+-->
+							<input type="hidden" name="app_date_campaign" id="app_date_campaign" value="<?php echo date('Y-m-d H:i',$props->app_date_campaign->value); ?>" >
+							<a href="#" class="open-modal-calendar icon-calendar" class="open-modal-calendar" rel="#app_date_campaign"></a>
+							<span id="app_date_campaign_display"><?php echo date(lang_line('front_format_date_time',false),$props->app_date_campaign->value); ?></span>
+							
+							<label class="inline">
+								<a data-content="<?php echo $props->app_date_campaign->help; ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_date_campaign->label; ?>"></a> 
+								<?php echo $props->app_date_campaign->label; ?>
+							</label>
+							
+							
+							<input type="hidden" name="app_date_close" id="app_date_close" value="<?php echo date('Y-m-d H:i', $props->app_date_close->value); ?>" min_date="#app_date_campaign" >
+							<a href="#" class="open-modal-calendar icon-calendar" class="open-modal-calendar" rel="#app_date_close"></a> 
+							<span id="app_date_close_display"><?php echo date(lang_line('front_format_date_time',false),$props->app_date_close->value); ?></span>
+							
+							<label class="inline">
+								<a data-content="<?php echo $props->app_date_close->help; ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_date_close->label; ?>"></a> 
+								<?php echo $props->app_date_close->label; ?>
+							</label>
+							
+							
+							<input type="hidden" name="app_date_winners" id="app_date_winners" value="<?php echo date('Y-m-d H:i', $props->app_date_winners->value); ?>"  min_date="#app_date_close" >
+							<a href="#" class="open-modal-calendar icon-calendar" class="open-modal-calendar" rel="#app_date_winners"></a>
+							<span id="app_date_winners_display"><?php echo date(lang_line('front_format_date_time',false),$props->app_date_winners->value); ?></span>
+							
+							<label class="inline">
+								<a data-content="<?php echo $props->app_date_winners->help; ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_date_winners->label; ?>"></a> 
+								<?php echo $props->app_date_winners->label; ?>
+							</label>
+							
+							
+							
+						</div>
+						
+						
+					</div>
+					
+					<!-- Timezones -->
+					<div class="control-group <?php echo $props->app_timezone->css_versions(); ?>">
+						<label class="control-label" for="app_timezone"> 
+							<a data-content="<?php echo $props->app_timezone->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_timezone->label; ?>"></a> 
+							<?php echo $props->app_timezone->label; ?>
+						</label>
+
+						<div class="controls">
+							<?php echo timezone_menu($props->app_timezone->value,'','app_timezone'); ?>
+						</div>
+					</div>
+				
+					
+					<!-- Requirements -->
+					<div class="control-group <?php echo $props->app_description->css_versions(); ?>">
+						<label class="control-label" for="app_user_requirements[]"> 
+							<a data-content="<?php echo $props->app_user_requirements->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_user_requirements->label; ?>"></a> 
+							<?php echo $props->app_user_requirements->label; ?>
+						</label>
+						<?php $values = explode(',',$props->app_user_requirements->value); ?>
+						<div class="controls">
+							<input type="hidden" name="app_user_requirements[]" value="" /> <!-- dont remove, required for successful checkbox -->
+							<label class="checkbox inline">
+								<?php echo 	form_checkbox(array(
+												'name' => 'app_user_requirements[]',
+												'value' => 'name',
+												'checked' => in_array('name',$values),
+												'class'	=> '',
+											)); 
+										
+								?>
+            					<?php lang_line('app_user_requirement_name'); ?>
+            				</label>
+            				<label class="checkbox inline">
+            					<?php echo 	form_checkbox(array(
+												'name' => 'app_user_requirements[]',
+												'value' => 'email',
+												'checked' => in_array('email',$values),
+												'class'	=> '',
+											)); 
+										
+								?>
+            					<?php lang_line('app_user_requirement_email'); ?>
+        					</label>
+        					<label class="checkbox inline">
+            					<?php echo 	form_checkbox(array(
+												'name' => 'app_user_requirements[]',
+												'value' => 'phone',
+												'checked' => in_array('phone',$values),
+												'class'	=> '',
+											)); 
+										
+								?>
+            					<?php lang_line('app_user_requirement_phone'); ?>
+            				</label>
+            				<label class="checkbox inline">
+            					<?php echo 	form_checkbox(array(
+												'name' => 'app_user_requirements[]',
+												'value' => 'birthday',
+												'checked' => in_array('birthday',$values),
+												'class'	=> '',
+											)); 
+										
+								?>
+            					<?php lang_line('app_user_requirement_birthday'); ?>
+            				</label>
+            				<label class="checkbox inline">
+            					<?php echo 	form_checkbox(array(
+												'name' => 'app_user_requirements[]',
+												'value' => 'gender',
+												'checked' => in_array('gender',$values),
+												'class'	=> '',
+											)); 
+										
+								?>
+            					<?php lang_line('app_user_requirement_gender'); ?>
+            				</label>
+            				<label class="checkbox inline">
+            					<?php echo 	form_checkbox(array(
+												'name' => 'app_user_requirements[]',
+												'value' => 'country',
+												'checked' => in_array('country',$values),
+												'class'	=> '',
+											)); 
+										
+								?>
+            					<?php lang_line('app_user_requirement_country'); ?>
+            				</label>
+            				<label class="checkbox inline">
+            					<?php echo 	form_checkbox(array(
+												'name' => 'app_user_requirements[]',
+												'value' => 'custom',
+												'checked' => in_array('custom',$values),
+												'id'	=> 'app_user_requirements_custom',
+											));
+								?>
+            					<?php lang_line('app_user_requirement_custom'); ?>
+          					</label>
+          					<input type="text" class="input-large required" id="app_user_requirements_custom_label" name="app_user_requirements_custom_label" value="<?php echo $props->app_user_requirements_custom_label->value; ?>" placeholder="<?php echo $props->app_user_requirements_custom_label->label; ?>" >
+						</div>
+						
+						<script type="text/javascript">
+							function update_custom_requirement_status()
+							{ 
+								var $check = $('#app_user_requirements_custom');
+								var status = $check.prop('checked');
+								if(status)
+								{
+									$('#app_user_requirements_custom_label').css('display','');
+									$('#app_user_requirements_custom_label').addClass('required');
+								}
+								else
+								{
+									$('#app_user_requirements_custom_label').css('display','none');
+									$('#app_user_requirements_custom_label').removeClass('required');
+								}
+								
+								
+							}
+							
+							$('#app_user_requirements_custom').click(function(e) {
+								update_custom_requirement_status();
+							})
+							update_custom_requirement_status();
+
+						</script>
+					</div>
+					
+					
+					<!-- Rules -->
+					<div class="control-group <?php echo $props->app_description->css_versions(); ?>">
+						<label class="control-label" for="app_rules"> 
+							<a data-content="<?php echo $props->app_rules->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_rules->label; ?>"></a> 
+							<?php echo $props->app_rules->label; ?>
+						</label>
+
+						<div class="controls">
+							<textarea class="input-xlarge rich-textarea" id="app_rules" name="app_rules" class=""><?php echo $props->app_rules->value; ?></textarea>
+						</div>
+						
+						<script type="text/javascript">
+							$('#app_rules').val('<?php echo $props->app_rules->value; ?>');
+							$("#app_rules").htmlarea({
+								 css: "html//js//jHtmlArea//jHtmlArea.Editor.css",
+								 loaded: function()
+								 {
+								 	
+								 }
+							})
+						</script>
+					</div>
+						
+					
+					<div class="form-actions">
+		            	<a class="btn preview"><?php lang_line('app_preview'); ?></a>
+		            	<a class="btn btn-primary save-form" id="form-details-submit"><?php lang_line('app_save_continue'); ?></a>
+		          	</div>
+
+				</fiedlset>
+			</form>
+		</div>
+		
+		<!-- DESIGN TAB -->
+		<div class="tab-pane" id="tab-3">
+			<form class="form-horizontal well" id="form-design" method="post" action="<?php echo lang_base_url('app/save/'.$campaign->id); ?>">
+				<input type="hidden" name="tab_3_configured" value="1" />
+				
+				<fieldset>
+					<legend><?php lang_line('app_design_help'); ?></legend>
+				
+					<!-- No Fan -->
+					<div class="control-group <?php echo $props->app_title->css_versions(); ?>">
+						<label class="control-label" for="look_no_fan_mode"> 
+							<a data-content="<?php echo $props->look_no_fan_mode->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->look_no_fan_mode->label; ?>"></a> 
+							<?php echo $props->look_no_fan_mode->label; ?>
+						</label>
+						
+						
+						<div class="controls content-type">
+							<input type="hidden" name="look_no_fan_mode" id="look_no_fan_mode" value="<?php echo $props->look_no_fan_mode->value; ?>" />
+							<input type="hidden" name="look_no_fan_image" id="look_no_fan_image" value="<?php echo $props->look_no_fan_image->value; ?>">
+							<input type="hidden" name="look_no_fan_html" id="look_no_fan_html" value="<?php echo $props->look_no_fan_html->value; ?>">
+							
+							<div class="btn-group" rel="look_no_fan">
+								<button class="btn <?php echo $props->look_no_fan_mode->value == 'disabled' ? 'active' : '' ?>" rel="disabled"><?php lang_line('app_look_disabled'); ?></button>
+								<button class="btn <?php echo $props->look_no_fan_mode->value == 'default' ? 'active' : '' ?>" rel="default"><?php lang_line('app_look_default'); ?></button>
+								<button class="btn <?php echo $props->look_no_fan_mode->value == 'image' ? 'active' : ''; ?>" rel="image"><?php lang_line('app_look_image'); ?></button>
+								<button class="btn <?php echo $props->look_no_fan_mode->value == 'html' ? 'active' : ''; ?>" rel="html"><?php lang_line('app_look_html'); ?></button>
+							</div>
+						</div>
+						
+					</div>
+						
+					<!-- Teaser -->
+					<div class="control-group <?php echo $props->app_title->css_versions(); ?>">
+						<label class="control-label" for="look_teaser_mode"> 
+							<a data-content="<?php echo $props->look_teaser_mode->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->look_teaser_mode->label; ?>"></a> 
+							<?php echo $props->look_teaser_mode->label; ?>
+						</label>
+						
+						<div class="controls content-type">
+							<input type="hidden" name="look_teaser_mode" id="look_teaser_mode" value="<?php echo $props->look_teaser_mode->value; ?>" />
+							<input type="hidden" name="look_teaser_image" id="look_teaser_image" value="<?php echo $props->look_teaser_image->value; ?>">
+							<input type="hidden" name="look_teaser_html" id="look_teaser_html" value="<?php echo $props->look_teaser_html->value; ?>">
+							
+							<div class="btn-group" rel="look_teaser">
+								<button class="btn <?php echo $props->look_teaser_mode->value == 'default' ? 'active' : '' ?>" rel="default"><?php lang_line('app_look_default'); ?></button>
+								<button class="btn <?php echo $props->look_teaser_mode->value == 'image' ? 'active' : ''; ?>" rel="image"><?php lang_line('app_look_image'); ?></button>
+								<button class="btn <?php echo $props->look_teaser_mode->value == 'html' ? 'active' : ''; ?>" rel="html"><?php lang_line('app_look_html'); ?></button>
+							</div>
+						</div>
+						
+					</div>
+					
+					<!-- Campaign -->
+					<div class="control-group <?php echo $props->app_title->css_versions(); ?>">
+						<label class="control-label" for="look_campaign_mode"> 
+							<a data-content="<?php echo $props->look_campaign_mode->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->look_campaign_mode->label; ?>"></a> 
+							<?php echo $props->look_campaign_mode->label; ?>
+						</label>
+						
+						<div class="controls content-type">
+							<input type="hidden" name="look_campaign_mode" id="look_campaign_mode" value="<?php echo $props->look_campaign_mode->value; ?>" />
+							<input type="hidden" name="look_campaign_image" id="look_campaign_image" value="<?php echo $props->look_campaign_image->value; ?>">
+							<input type="hidden" name="look_campaign_html" id="look_campaign_html" value="<?php echo $props->look_campaign_html->value; ?>">
+							
+							<div class="btn-group" rel="look_campaign">
+								<button class="btn <?php echo $props->look_campaign_mode->value == 'default' ? 'active' : '' ?>" rel="default"><?php lang_line('app_look_default'); ?></button>
+								<button class="btn <?php echo $props->look_campaign_mode->value == 'image' ? 'active' : ''; ?>" rel="image"><?php lang_line('app_look_image'); ?></button>
+								<button class="btn <?php echo $props->look_campaign_mode->value == 'html' ? 'active' : ''; ?>" rel="html"><?php lang_line('app_look_html'); ?></button>
+							</div>
+						</div>
+						
+					</div>
+					
+					<!-- Campaign closed -->
+					<div class="control-group <?php echo $props->app_title->css_versions(); ?>">
+						<label class="control-label" for="look_close_mode"> 
+							<a data-content="<?php echo $props->look_close_mode->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->look_close_mode->label; ?>"></a> 
+							<?php echo $props->look_close_mode->label; ?>
+						</label>
+						
+						<div class="controls content-type">
+							<input type="hidden" name="look_close_mode" id="look_close_mode" value="<?php echo $props->look_close_mode->value; ?>" />
+							<input type="hidden" name="look_close_image" id="look_close_image" value="<?php echo $props->look_close_image->value; ?>">
+							<input type="hidden" name="look_close_html" id="look_close_html" value="<?php echo $props->look_close_html->value; ?>">
+							
+							<div class="btn-group" rel="look_close">
+								<button class="btn <?php echo $props->look_close_mode->value == 'default' ? 'active' : '' ?>" rel="default"><?php lang_line('app_look_default'); ?></button>
+								<button class="btn <?php echo $props->look_close_mode->value == 'image' ? 'active' : ''; ?>" rel="image"><?php lang_line('app_look_image'); ?></button>
+								<button class="btn <?php echo $props->look_close_mode->value == 'html' ? 'active' : ''; ?>" rel="html"><?php lang_line('app_look_html'); ?></button>
+							</div>
+						</div>
+						
+					</div>
+					
+					<!-- Winners -->
+					<div class="control-group <?php echo $props->app_title->css_versions(); ?>">
+						<label class="control-label" for="look_winners_mode"> 
+							<a data-content="<?php echo $props->look_winners_mode->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->look_winners_mode->label; ?>"></a> 
+							<?php echo $props->look_winners_mode->label; ?>
+						</label>
+						<div class="controls content-type">
+							<input type="hidden" name="look_winners_mode" id="look_winners_mode" value="<?php echo $props->look_winners_mode->value; ?>" />
+							<input type="hidden" name="look_winners_image" id="look_winners_image" value="<?php echo $props->look_winners_image->value; ?>">
+							<input type="hidden" name="look_winners_html" id="look_winners_html" value="<?php echo $props->look_winners_html->value; ?>">
+							
+							<div class="btn-group" rel="look_winners">
+								<button class="btn <?php echo $props->look_winners_mode->value == 'default' ? 'active' : '' ?>" rel="default"><?php lang_line('app_look_default'); ?></button>
+								<button class="btn <?php echo $props->look_winners_mode->value == 'image' ? 'active' : ''; ?>" rel="image"><?php lang_line('app_look_image'); ?></button>
+								<button class="btn <?php echo $props->look_winners_mode->value == 'html' ? 'active' : ''; ?>" rel="html"><?php lang_line('app_look_html'); ?></button>
+							</div>
+						</div>
+					</div>
+					
+					
+					<!-- CSS -->
+					<div class="control-group <?php echo $props->app_description->css_versions(); ?>">
+						<label class="control-label" for="look_css"> 
+							<a data-content="<?php echo $props->look_css->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->look_css->label; ?>"></a> 
+							<?php echo $props->look_css->label; ?>
+						</label>
+
+						<div class="controls">
+							<textarea class="input-xlarge" id="look_css" name="look_css" class=""><?php echo $props->look_css->value; ?></textarea>
+						</div>
+					</div>
+					
+					<div class="form-actions">
+		            	<a class="btn preview"><?php lang_line('app_preview'); ?></a>
+		            	<a class="btn btn-primary save-form" id="form-look-submit"><?php lang_line('app_save_continue'); ?></a>
+		          	</div>
+					
+				</fieldset>
+			</form>
+		</div>
+		
+		<div class="tab-pane" id="tab-4">
+			<?php echo $payment_tab; ?>
+		</div>
+		
+		<div class="tab-pane" id="tab-5">
+			<?php echo $installation_status; ?>
+		</div>
+		
+		<div class="tab-pane" id="tab-6">
+			<?php echo $users_winners_tab; ?>
+		</div>
+	</div>
+	
+		
+	
+	
+	<?php echo $common_popups; ?>
+	
+</div>

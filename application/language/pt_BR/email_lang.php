@@ -1,0 +1,5 @@
+<?php  // prefix all entries with the file name to avoid language conflicts
+$lang['email_reset_password '] = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, QUIS exercitation nostrud ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis Aute dor Irure em reprehenderit em voluptate velit ESSE cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat não proident, sunt qui officia em falha deserunt mollit anim id est Laborum:';
+$lang['email_welcome '] = 'Bem-vindo ao Leadmint! O seu pedido de registro foi enviada aos nossos administradores. Você receberá uma confirmação de sua conta de alta.';
+$lang['email_welcome_subject '] = 'Bem-vindo ao Promoções Leadmint';
+$lang['email_registration_request_subject '] = 'Pedido de registro em Leadmint';

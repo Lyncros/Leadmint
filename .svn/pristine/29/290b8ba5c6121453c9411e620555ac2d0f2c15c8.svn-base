@@ -1,0 +1,21 @@
+
+				<div class="pagination">
+					<ul>
+					
+                		
+						<?php $class = $paged->has_previous ? '' : 'disabled'; ?>
+						<li class="<?php echo $class; ?>"><a title="Primero" class="pfirst " href="<?php echo($base_url); ?>/page/1">«</a></li>
+						<li class="<?php echo $class; ?>"><a title="Anterior" class="pback" href="<?php echo($base_url); ?>/page/<?php echo($paged->previous_page); ?>">«</a></li>
+						
+						<?php	for($i=1; $i<= $paged->total_pages; $i++ ) { ?>
+						<li><a title="<?php echo($i); ?>" class="number <?php echo($i==$paged->current_page ? 'current' : ''); ?>" href="<?php echo($base_url); ?>/page/<?php echo($i); ?>"><?php echo($i); ?></a></li>
+						<?php 	} ?>
+						
+						<?php $class = $paged->has_next ? '' : 'disabled'; ?>
+						<li class="<?php echo $class; ?>"><a title="Siguiente" class="pnext" href="<?php echo($base_url); ?>/page/<?php echo($paged->next_page); ?>">»</a></li>
+						<li class="<?php echo $class; ?>"><a title="Último" class="plast" href="<?php echo($base_url); ?>/page/<?php echo($paged->total_pages); ?>">»</a></li>
+						<li><span class="total-records">(<?php lang_line('front_total_records')?>: <?php echo($paged->total_rows); ?>)</span></li>
+					</ul>
+					
+					
+				</div>

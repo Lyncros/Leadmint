@@ -1,0 +1,125 @@
+	<?php echo isset($timer_view) ? $timer_view : ''; ?>
+	
+	<div id="header-holder">
+	<?php echo $user_content; ?>
+	</div>
+	
+	<div id="sweeptstake-holder">
+		<form action="<?php echo base_url(); ?>apps/sweepstakes/save" method="post" id="form-sweepstake" class="contest-form">
+			<input type="hidden" name="campaign_id" value="<?php echo $campaign->id; ?>" />
+			<input type="hidden" name="user_id" id="sweeptstakes_user_id" value="-1" />
+			
+			<?php
+				$ndx = 0; 
+				$requirements = explode(',',$campaign->application->app_user_requirements->value);
+				if(in_array('name',$requirements))
+				{
+					$ndx++;
+					$class = $ndx%2 == 1 ? 'left' : 'right';
+			?>
+					<p class="<?php echo $class; ?>">
+						<input type="text" name="email" id="user_name" class="required" value="" placeholder="<?php lang_line('app_user_requirement_name') ?>" />
+					</p>
+			<?php 
+				} 
+				
+				if(in_array('email',$requirements))
+				{
+					$ndx++;
+					$class = $ndx%2 == 1 ? 'left' : 'right';
+			?>
+					<p class="<?php echo $class; ?>">
+						<input type="text" name="email" id="user_email" class="required email"value="" placeholder="<?php lang_line('app_user_requirement_email') ?>" />
+					</p>
+			<?php
+				}
+				
+				if(in_array('phone',$requirements))
+				{
+					$ndx++;
+					$class = $ndx%2 == 1 ? 'left' : 'right';
+			?>
+					<p class="<?php echo $class; ?>">
+						<input type="text" name="phone" class="required"value="" placeholder="<?php lang_line('app_user_requirement_phone') ?>" />
+					</p>
+			<?php
+				}
+				
+				if(in_array('birthday',$requirements))
+				{
+					$ndx++;
+					$class = $ndx%2 == 1 ? 'left' : 'right';
+			?>
+					<p class="<?php echo $class; ?>">
+						<p class="<?php echo $class; ?>">
+						
+						
+						<label><?php lang_line('app_user_requirement_birthday') ?></label>
+						<select id="birthday-day" name="birthday-day">
+						<?php for($i=1; $i<=31; $i++) { ?>
+							<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+						<?php } ?>
+						</select>
+						
+						<select id="birthday-month" name="birthday-month">
+						<?php for($i=1; $i<=12; $i++) { ?>
+							<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+						<?php } ?>
+						</select>
+						
+						<select id="birthday-year" name="birthday-year">
+						<?php for($i=1940; $i<= date('Y'); $i++) { ?>
+							<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+						<?php } ?>
+						</select>
+						
+						<input type="hidden" name="birthday" class="required valid-date" value="<?php echo date('Y-m-d'); ?>" />
+					</p>
+					</p>
+			<?php
+				}
+				
+				if(in_array('gender',$requirements))
+				{
+					$ndx++;
+					$class = $ndx%2 == 1 ? 'left' : 'right';
+			?>
+					<p class="<?php echo $class; ?> radio">
+						<label><input type="radio" name="gender" value="male" checked="checked" />  <?php lang_line('app_user_requirement_male') ?> </label>
+						<label><input type="radio" name="gender" value="female" />  <?php lang_line('app_user_requirement_female') ?> </label>
+					</p>
+			<?php
+				}
+				
+				if(in_array('country',$requirements))
+				{
+					$ndx++;
+					$class = $ndx%2 == 1 ? 'left' : 'right';
+			?>
+					<p class="<?php echo $class; ?>">
+						<?php echo country_dropdown('country') ?>
+					</p>
+			<?php
+				}
+				
+				if(in_array('custom',$requirements))
+				{
+					$ndx++;
+					$class = $ndx%2 == 1 ? 'left' : 'right';
+			?>
+					<p class="<?php echo $class; ?>">
+						<input type="text" name="custom" class="required" value="" placeholder="<?php echo $campaign->application->app_user_requirements_custom_label->value; ?>" />
+					</p>
+			<?php
+				}
+			?>
+			<div id="show-errors">
+			
+			</div>
+			<div class="actions">
+				<input type="button" id="sweepstake-submit" class="disabled" value="<?php lang_line('app_sweeptstakes_participate'); ?>">
+			</div>
+		</form>
+	</div>
+	
+	<?php echo isset($comments_view) ? $comments_view : ''; ?>

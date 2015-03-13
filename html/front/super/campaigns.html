@@ -1,0 +1,70 @@
+	<h1><?php lang_line('super_campaigns'); ?></h1>
+	<script type="text/javascript"> 
+		$(document).ready(function() {
+				$('.enableDisableCampaign').live("click", function(e) {
+					e.preventDefault();		
+					
+					$.post($(this).attr('action'), null, function(rsp){
+						var json = $.parseJSON(rsp);						
+						if(json.status == 'error')
+						{
+							$("#enableDissableError").dialog({ modal: true });
+							return false;
+						}
+						else
+						{
+							$.post('<?php echo lang_site_url('super/campaign_list/page') . '/' . $current_page; ?>', $("#filter_form").serialize(), function(rsp){
+								var rspJson = $.parseJSON(rsp);								
+								$("#campaign_table").html(rspJson.data);								
+							});
+							$("#enableDissableOk").dialog({ modal: true });
+							return true;
+						}
+					});
+				});
+			});	
+	</script>
+	<div id="enableDissableError" title="Error" style="display: none;">
+	   <p>La operaci&oacute;n no pude realizarse, intente nuevamente m&aacute;s tarde.</p>
+	</div>
+	<div id="enableDissableOk" title="Operaci&oacute;n Realizada" style="display: none;">
+	   <p>La operaci&oacute;n se realiz&oacute; correctamente.</p>
+	</div>
+	<form id="filter_form" class="well form-inline" action="<?php echo lang_site_url('super/campaigns'); ?>" method="post">
+		<!-- <input type="text" class="input-medium" name="filter_title" placeholder="<?php lang_line('front_filter_campaign_title'); ?>" value="<?php echo $filters->filter_title; ?>"> -->
+		<input type="hidden" name="filter_user_id" id="filter_user_id" value="<?php echo $filters->filter_user_id; ?>" />
+		<input type="text" class="input-medium" name="filter_user_name" id="filter_user_name" placeholder="<?php lang_line('front_filter_user'); ?>" value="<?php echo $filters->filter_user_name; ?>">
+		<script>
+			$("#filter_user_name").autocomplete('<?php echo lang_site_url('super/users_autocomplete'); ?>', {
+				minChars: 2,
+				max: 12,
+				autoFill: true,
+				mustMatch: true,
+				matchContains: true,
+				scrollHeight: 220,
+			}).result(function(evt, data, formatted) {				
+				$('#filter_user_id').val('');
+				
+				if (data)
+				{
+					$('#filter_user_id').val(data[1]);					
+				}	
+			});					
+		</script>
+		<label><?php lang_line('front_filter_app_type'); ?></label>
+		<?php echo app_model::dropdown('filter_app_type', $filters->filter_app_type, 'id="filter_app_type"',array('0'=>lang_line('front_filter_all_values',false))); ?>
+		<label class="checkbox">
+			<input type="checkbox" name="filter_show_inactive" <?php echo $filters->filter_show_inactive ? 'checked="checked"' : ''; ?>> <?php lang_line('front_filter_show_inactive') ?>
+		</label>
+		<label class="checkbox">
+			<input type="checkbox" name="filter_show_only_invalid" <?php echo $filters->filter_show_only_invalid ? 'checked="checked"' : ''; ?>> <?php lang_line('front_filter_show_only_invalid') ?>
+		</label>
+    	<button type="submit" class="btn btn-primary"><?php lang_line('front_filter_filter') ?></button>
+    	<a href="<?php echo lang_site_url('super/campaigns'); ?>" class="btn"><?php lang_line('front_filter_reset') ?></a>
+    </form>
+    <div id="campaign_table">
+		<?php echo $this->template->view('super/campaign_list',array('campaigns' => $campaigns),false) ?>
+	</div>
+	
+	<?php echo $pagination; ?>
+	

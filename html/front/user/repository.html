@@ -1,0 +1,97 @@
+	<script type="text/javascript"> 
+		$(document).ready(function() {
+				$('#in_out_repository').live("click", function(e) {
+					e.preventDefault();					
+					$.post($(this).attr('action'), null, function(rsp){
+						var json = $.parseJSON(rsp);						
+						if(json.status == 'error')
+						{
+							$("#dialog_operation_error").dialog({ modal: true, height:90 });
+							return false;
+						}
+						else
+						{
+							$.post('<?php echo lang_site_url('user/campaign_list/page') . '/' . $current_page; ?>', $("#filter_form").serialize(), function(rsp){
+								var rspJson = $.parseJSON(rsp);
+								
+								$("#campaign_table").html(rspJson.data);								
+							});
+							$("#dialog_operation_ok").dialog({ modal: true, height:90 });
+							return true;
+						}
+					});
+				});
+				$('#delete_campaign').live("click", function(e) {
+					e.preventDefault();
+					var action = $(this).attr('action');
+					$('#confirm_delete_dialog').dialog({
+						resizable: false,
+						width: 450,
+						height:160,
+						modal: true,
+						buttons: {
+							"<?php lang_line('delete_campaign_confirm_ok_button') ?>": function() {
+								$( this ).dialog( "close" );
+								$('#dialog_waiting').dialog({ 
+									modal: true, 
+									closeOnEscape: false,
+									open: function(event, ui) { $(".ui-dialog-titlebar-close").hide();}});
+								$.post(action, null, function(rsp){
+									var json = $.parseJSON(rsp);						
+									if(json.status == 'error')
+									{
+										$('#dialog_waiting').dialog('close');
+										$("#dialog_operation_error").dialog({ modal: true, open: function(event, ui) { $(".ui-dialog-titlebar-close").show();} });
+										return false;
+									}
+									else
+									{
+										$.post('<?php echo lang_site_url('user/campaign_list/page') . '/' . $current_page; ?>', $("#filter_form").serialize(), function(rsp){
+											var rspJson = $.parseJSON(rsp);
+											$('#dialog_waiting').dialog('close');
+											$("#campaign_table").html(rspJson.data);								
+										});
+										$("#dialog_operation_ok").dialog({ modal: true, open: function(event, ui) { $(".ui-dialog-titlebar-close").show();} });
+										return true;
+									}
+								});
+							},
+							"<?php lang_line('delete_campaign_confirm_cancel_button') ?>": function() {
+								$( this ).dialog( "close" );
+							}
+						}		
+					});
+				});
+        
+			});	
+	</script>	
+	<h1><?php lang_line('user_repository') ?></h1>
+	<div id="confirm_delete_dialog" title="<?php lang_line('delete_campaign_confirm_title') ?>" style="display: none;">
+		<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><?php lang_line('delete_campaign_confirm_text') ?></p>
+	</div>
+	<form class="well form-inline" id="filter_form" action="<?php echo lang_site_url('user/repository'); ?>" method="post">
+		<input type="hidden" name="show_repository" value="1">
+		<label><?php lang_line('front_filter_app_type'); ?></label>
+		<?php echo app_model::dropdown('filter_app_type', $filters->filter_app_type, 'id="filter_app_type"',array('0'=>lang_line('front_filter_all_values',false))); ?>
+		<label class="checkbox" name="filter_inactive" value="1">
+			<input type="checkbox" name="filter_show_inactive" <?php echo $filters->filter_show_inactive ? 'checked="checked"' : ''; ?>> <?php lang_line('front_filter_show_inactive') ?>
+		</label>
+    	<button type="submit" class="btn btn-primary"><?php lang_line('front_filter_filter') ?></button>
+    	<a href="<?php echo lang_site_url('user/repository'); ?>" class="btn"><?php lang_line('front_filter_reset') ?></a>
+    </form>    
+	<div id="campaign_table">
+		<?php echo $this->template->view('user/campaign_list',array('campaigns' => $campaigns, 'show_campaign_delete' => true),false) ?>
+	</div>
+	<div>
+		<label><?php lang_line('user_create_new_app'); ?></label>
+		<?php echo app_model::dropdown('select_app', null, 'id="select_app"'); ?>
+		<a href="#" class="btn btn-primary" id="create_app"><?php lang_line('user_create'); ?></a>		
+		<script type="text/javascript">
+			$(function(){
+				$('#create_app').click(function(e) {
+					e.preventDefault();
+					top.location.href = '<?php echo lang_base_url('app/install'); ?>/'+$('#select_app').val();
+				})			
+			})
+		</script>
+	</div>

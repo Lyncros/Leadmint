@@ -1,0 +1,18 @@
+<?php  // prefix all entries with the file name to avoid language conflicts
+$lang['front_sample_text'] = 'English sample text';
+
+// form errors
+$lang['front_error_required'] = 'Please, complete this field';
+$lang['front_error_email'] = 'Please, provide a valid email';
+$lang['front_error_email_exists'] = "The email provided is already in use";
+$lang['front_error_password_match'] = 'Confirmation must match the password';
+$lang['front_error_email_not_exists'] = "The email provided is already in use";
+
+/* Header */ 
+$lang['front_register'] = 'Register';
+$lang['front_login'] = 'Login';
+$lang['front_or'] = 'or';
+$lang['front_contact'] = 'Contact';
+
+$lang['front_format_date'] = 'm-d-Y';
+$lang['front_format_date_time'] = 'm-d-Y H:i';

@@ -1,0 +1,28 @@
+<?php  // prefix all entries with the file name to avoid language conflicts
+
+/* Register & Access */
+
+/* Register label  */
+/* Form title */ 
+$lang['user_register'] = 'Register';
+
+/* Form fields */
+$lang['user_firstname'] = 'First Name';
+$lang['user_lastname'] = 'Last Name';
+$lang['user_email'] = 'Email';
+$lang['user_language'] = 'Language';
+$lang['user_country'] = 'Country';
+$lang['user_password'] = 'Password';
+$lang['user_password_confirmation'] = 'Password confirmation';
+
+/* Submit bt */
+$lang['user_submit'] = 'Submit';
+
+/* Acces label */
+/* Title */
+$lang['user_login'] = 'Login';
+
+/* Form fields */
+$lang['user_rememberme'] = 'Remember me';
+$lang['user_forgot_password'] = 'Forgot your password';
+

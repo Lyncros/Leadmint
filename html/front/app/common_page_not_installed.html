@@ -1,0 +1,280 @@
+<div class="loading" id="fb-status-holder">	
+	<div id="fb-not-logged" style="display:none">
+		<a class="fb-login" href="#"><?php lang_line('app_please_login'); ?></a>
+	</div>	
+	<div id="fb-logged-not-auth"  style="display:none">
+		<label> <?php lang_line('app_logged_as'); ?></label>		
+		<div class="img-holder"></div>
+		<div class="username-holder"></div>
+		<p><?php lang_line('app_please_full_permissions_required') ?></p>
+		<a class="fb-login" href="#"><?php lang_line('app_please_login'); ?></a>		
+		<a class="fb-logout" href="#"><?php lang_line('app_fb_logout_and_login'); ?></a>
+	</div>	
+	<div id="fb-logged-auth"  style="display:none">
+		<label> <?php lang_line('app_logged_as'); ?></label>		
+		<div class="img-holder"></div>
+		<div class="username-holder"></div>		
+		<form class="form-horizontal well" id="form-install" method="post" action="<?php echo lang_base_url('app/tabinstall/'.$campaign_id); ?>">
+			<fieldset>
+				<legend><?php lang_line('app_select_page_to_install'); ?></legend>				
+				<!-- Facebook page selection -->
+				<div class="control-group no-version-hide">
+					<label class="control-label" for="page_select"> <a data-content="<?php lang_line('app_facebook_page_select_help'); ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php lang_line('app_facebook_page_select_label'); ?>"></a> <?php lang_line('app_facebook_page_select_label'); ?></label>
+
+					<div class="controls">
+						<select id="facebook_page_select" name="facebook_page_select" size="5" class="required"></select>
+					</div>
+				</div>
+				<!-- Facebook tab name -->
+				<div class="control-group no-version-hide">
+					<label class="control-label" for="page_select"> <a data-content="<?php lang_line('app_facebook_tab_name_help'); ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php lang_line('app_facebook_tab_name_label'); ?>"></a> <?php lang_line('app_select_page_label'); ?></label>
+
+					<div class="controls">
+						<input type="text" class="input-xlarge required" id="facebook_tab_name" name="facebook_tab_name" value="<?php echo $default_tab_name; ?>">
+					</div>
+				</div>
+				<div class="form-actions">
+					<a class="btn btn-primary install-on-page" data-loading-text="<?php lang_line('app_please_wait'); ?>" id="form-details-submit"><?php lang_line('app_install_app_on_page'); ?></a>
+				</div>				
+			</fieldset>
+		</form>		
+		<a class="fb-logout" href="#"><?php lang_line('app_fb_logout_and_login'); ?></a>
+	</div>
+</div>
+<script type="text/javascript">
+	window.fbAsyncInit = function() {
+		initialize_publishing();		
+	};
+	
+	(function(d){
+		var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+		js = d.createElement('script'); js.id = id; js.async = true;
+		js.src = "//connect.facebook.net/en_US/all.js";
+		d.getElementsByTagName('head')[0].appendChild(js);
+	}(document));
+
+	// FACEBOOK FUNCTIONS
+	function initialize_publishing()
+	{
+		FB.init({	
+			appId      : '<?php echo $facebook_app_id; ?>',
+			status     : true, 
+			cookie     : true,
+			xfbml      : true,
+			oauth      : true,
+		});
+		
+		// manage wich div to show
+		FB.getLoginStatus(function(response) {
+			if (response.status === 'connected') {
+				// the user is logged in and has authenticated your
+				// app, and response.authResponse supplies
+				// the user's ID, a valid access token, a signed
+				// request, and the time the access token 
+				// and signed request each expire
+				var uid = response.authResponse.userID;
+				var accessToken = response.authResponse.accessToken;				
+				var query = FB.Data.query('select publish_stream,manage_pages,email from permissions where uid={0}', response.authResponse.userID);
+				query.wait(function(rows) 
+				{
+					var has_perms = check_permissions(rows[0], new Array('publish_stream','manage_pages','email'));
+					if(has_perms)
+					{
+						show_auth();						  
+					} else {
+						show_not_auth(true);
+					}
+				});				
+			} else if (response.status === 'not_authorized') {
+				// the user is logged in to Facebook, 
+				// but has not authenticated your app
+				show_not_auth(false);
+			} else {
+				// the user isn't logged in to Facebook.
+				show_not_logged();
+			}
+		});
+	}
+	
+	function fb_hide_all()
+	{
+		$('#fb-status-holder > div').hide();
+	}
+	
+	function show_not_auth(show_user)
+	{
+		fb_hide_all();
+		if(show_user)
+		{
+			fb_user_data('#fb-logged-not-auth');
+			$('#fb-logged-not-auth').show('fast');
+			fb_user_data('#fb-logged-not-auth');
+		}
+		else
+		{
+			return show_not_logged()
+		}		
+	}
+	
+	function show_not_logged()
+	{
+		fb_hide_all();
+		$('#fb-not-logged').show('fast');
+	}
+	
+	function show_auth()
+	{
+		fb_hide_all();
+		$('#fb-logged-auth').show('fast');
+		fb_user_data('#fb-logged-auth');
+		fb_user_accounts();
+	}
+
+	function fb_user_data(parent_div)
+	{
+		FB.api('/me', function(me){
+			var $img_holder = $(parent_div + ' .img-holder' );
+			FB.api('me/picture', function(src){
+				var img = new Image();
+				img.onload = function(){
+					$img_holder.html(img);
+				};
+				img.src = src
+			})
+			
+			var $name_holder = $(parent_div + ' .username-holder');
+			$name_holder.text(me.name);
+		})
+	}
+	
+	function fb_user_accounts()
+	{
+		$('#facebook_page_select option').remove();
+		FB.api('/me/accounts', function(response){
+			if(response.data)
+			{
+				$.each(response.data, function(ndx,item){
+					//console.log(item);
+					if(item.category != 'Application') 
+					{
+						$('#facebook_page_select')
+						 .append($("<option></option>")
+						 .attr("value",item.id)
+						 .text(item.name));
+					}
+				})
+			}
+		});
+	}	
+
+	$('.fb-logout').click(function(e) {
+		e.preventDefault();
+		fb_hide_all();
+		FB.logout(function(response){
+			$('#fb-not-logged').show('fast');
+		});
+	})
+	
+	$('.fb-login').click(function(e) {
+		e.preventDefault();
+		 FB.login(function(response) {
+			if (response.authResponse) {
+				// recheck user has granted permissions
+				var query = FB.Data.query('select publish_stream,manage_pages,email from permissions where uid={0}', response.authResponse.userID);
+				query.wait(function(rows) 
+				{
+					var has_perms = check_permissions(rows[0], new Array('publish_stream','manage_pages','email'));
+					if(has_perms)
+					{
+						show_auth()
+						  
+					} else {
+						show_not_auth(true)                    
+					}
+				});
+			}
+			else
+			{
+				show_not_logged()
+			}
+		}, {scope: 'publish_stream,manage_pages,email'});
+	})
+	
+	$('.install-on-page').click(function(e) {
+		e.preventDefault();
+		var $button = $(this);
+		if($button.hasClass('disabled')) return false;
+		
+		var $form = $(this).parents('form');
+		
+		$form.validate({
+			errorElement: "p",
+			errorClass: "error",
+			validClass: "success",
+		})
+		
+		$button.button('loading');
+		if($form.validate().form())
+		{
+			$button.button('reset');
+			$.post(
+				'<?php echo lang_base_url('app/tabcheck/'.$campaign_id); ?>',
+				{'fb_page_id':$('#facebook_page_select').val()},
+				function(json)
+				{
+					if(json.status == 'error')
+					{
+						$('#modal-alert .modal-body').text(json.message);
+						$('#modal-alert #alert-ok').unbind();
+						$('#modal-alert #alert-ok').click(function(e) {
+							e.preventDefault();
+							$('#modal-alert').modal('hide');
+							do_install();
+						})
+						$('#modal-alert').modal('show');
+					} else {
+						do_install();
+					}					
+				},
+				'json'
+			)
+		}
+		else
+		{
+			$button.button('reset');
+		}		
+	})
+	
+	function do_install(data)
+	{
+		$button = $('.install-on-page');
+		$button.button('loading');
+		var $form = $('#form-install');
+		var data = $form.serialize();
+		$.post($form.attr('action'),data, function(rsp){			
+			$button.button('reset');
+			var json = $.parseJSON(rsp);
+			if(json.status == 'error')
+			{
+				alert(json.message)
+				return false
+			}
+			else
+			{
+				// reload the view
+				$('#tab-6').html(json.data);
+				return false;				
+			}
+		})
+	}
+	
+	function check_permissions(given, needed) // 
+	{
+		var flag = true;
+		$.each(needed, function(ndx,value) {
+			if(given[value] != 1) flag = false;;
+		})
+		
+		return flag;
+	}
+</script>

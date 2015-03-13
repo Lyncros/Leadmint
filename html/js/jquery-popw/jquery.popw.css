@@ -1,0 +1,27 @@
+#popw-overlay {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 1000;
+	background: #000;
+	display: none;
+}
+#popw-wrapper {width: 600px; background: #FFF; border: 8px solid #EBEBEB; position: fixed; display: none; top:40px}
+/* #popw-close {display:block; width: 25px; height: 29px; background: url(x.png) no-repeat; position: absolute; right: -15px; top: -15px; cursor: pointer} */
+
+#popw-wrapper.loading, #popw-content.loading {background: url(ajax-loader.gif) no-repeat 50% 50%;}
+#popw-inner-overlay {position: absolute; left: 0px; top: 0px; z-index: 100; background: #000  url(ajax-loader.gif) no-repeat 50% 50%; display: none;}
+#popw-wrapper.confirm {width: 300px;}
+
+#popw-wrapper .message {font-size: 14px; padding:10px; text-align: center;}
+#popw-wrapper .message span {color: #666666; display: inline-block; padding: 5px 0;}
+
+
+#popw-wrapper header {height: 23px; background: url(popup-header.png) no-repeat; padding: 6px 20px;}
+#popw-wrapper header nav {float: right;}
+#popw-wrapper h2 {float: left; color: #333333; font-size: 17px; line-height: 23px; font-weight: normal;}
+#popw-wrapper h2 span {font-size: 12px; font-weight: normal; color: #808080}
+#popw-wrapper .padding {padding: 20px;}
+
+#popw-wrapper .buttons {margin: 10px;}
+#popw-wrapper .buttons a {float: right; margin-left: 10px;}

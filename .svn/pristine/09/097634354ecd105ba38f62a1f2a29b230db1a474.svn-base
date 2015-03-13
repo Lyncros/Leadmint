@@ -1,0 +1,9 @@
+/* DateEntry styles */
+.dateEntry_control {
+	vertical-align: middle;
+	margin-left: 2px;
+	background: url(spinnerDefault.png) no-repeat;
+}
+* html .dateEntry_control { /* IE only */
+	margin-top: -4px;
+}

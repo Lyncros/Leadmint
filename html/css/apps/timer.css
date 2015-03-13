@@ -1,0 +1,82 @@
+#countdown_holder {
+	position: absolute;
+	right: 0;
+	background: #fff;
+	height: 50px;
+	padding: 6px;
+	border: 1px solid #ccc;
+}
+
+#countdown_dashboard {
+	height: 30px;
+	width: 160px;
+	float:right;
+}
+
+#conutdown_status_text {
+	font-size: 11px;
+	font-family: helvetica, arial;
+	float: left;
+	margin-top: 6px;
+	clear: both;
+}
+
+.dash {
+	width: 32px;
+	height: 36px;
+	float: left;
+	margin: 0px;
+	padding: 0px;
+	padding-left: 6px;
+	position: relative;
+	color: #333;
+	background-color: #333333;
+	border-right: 1px solid white;
+	background-image: none;
+}
+
+/*
+.weeks_dash {
+	background: transparent url('../images/dark_weeks_dash.png') 0 0 no-repeat;
+}
+
+.days_dash {
+	background: transparent url('../images/dark_days_dash.png') 0 0 no-repeat;
+}
+
+.hours_dash {
+	clear: left;
+	background: transparent url('../images/dark_hours_dash.png') 0 0 no-repeat;
+}
+
+.minutes_dash {
+	background: transparent url('../images/dark_minutes_dash.png') 0 0 no-repeat;
+}
+
+.seconds_dash {
+	
+background: transparent url('../images/dark_seconds_dash.png') 0 0 no-repeat;
+}*/
+
+.dash .digit {
+	font: bold 20px arial;
+	color: white;
+	font-weight: bold;
+	float: left;
+	width: 10px;
+	line-height: 15px;
+	text-align: center;
+	position: relative;
+	margin-right: 0px;
+	text-shadow: black 1px 1px;
+	margin-left: 2px;
+}
+
+.dash_title {
+	display: block;
+	color: white;
+	font-family: arial;
+	font-size: 9px;
+	margin-left: 5px;
+	text-shadow: black 1px 1px;
+}

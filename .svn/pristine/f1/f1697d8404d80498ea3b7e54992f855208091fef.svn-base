@@ -1,0 +1,30 @@
+	<h1><?php lang_line('user_reset_password'); ?></h1>
+
+	
+	<form class="well" id="form-reset" method="post">
+	
+		<label><?php lang_line('user_password'); ?></label>
+		<input type="password" class="span3 required" name="password" id="password">
+		
+		<label><?php lang_line('user_password_confirmation'); ?></label>
+		<input type="password" class="span3 required" name="confirmation" equalTo="#password">
+		
+		<div>
+		<button class="btn btn-success" type="submit"><?php lang_line('user_submit'); ?></button>
+		</div>
+	</form>
+	
+	<script type="text/javascript">
+			
+		$.validator.messages.required = '<?php lang_line('front_error_required'); ?>';
+		$.validator.messages.email = '<?php lang_line('front_error_email'); ?>';
+		$.validator.messages.unique_email = '<?php lang_line('front_error_email_exists'); ?>';
+		$.validator.messages.equalTo = '<?php lang_line('front_error_password_match'); ?>';
+
+		$('#form-reset').validate({
+			errorElement: "p",
+			errorClass: "error",
+			validClass: "success"
+		});
+	
+	</script>

@@ -1,0 +1,2 @@
+<?php  // prefix all entries with the file name to avoid language conflicts
+$lang['cms_sample_text'] = 'Portugues cms text';

@@ -1,0 +1,13 @@
+<?php
+
+$config['sweepstakes'] = array(
+	'app_id'		=> 1, // leadmint internal number 
+	'fb_api_id' 	=> '251115548332266',
+	'fb_api_secret'	=> '400776de1f43f688e09e8b83cfc7c256',
+);
+
+$config['code_validator'] = array(
+	'app_id'		=> 4, // leadmint internal number 
+	'fb_api_id' 	=> '477094008967413',
+	'fb_api_secret'	=> 'a2ccdb99e94a6991a11c8f12aa9cd8f0',
+);

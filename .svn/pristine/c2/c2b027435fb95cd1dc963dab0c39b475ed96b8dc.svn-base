@@ -1,0 +1,41 @@
+<script type="text/javascript"> 
+		$(document).ready(function() {
+				$('#unistall_fanpage').live("click", function(e) {
+					$('#dialog_waiting').dialog({ 
+						modal: true, 
+						closeOnEscape: false,
+						open: function(event, ui) { $(".ui-dialog-titlebar-close").hide();}});
+					e.preventDefault();					
+					$.post($(this).attr('action'), null, function(rsp){
+						var json = $.parseJSON(rsp);						
+						if(json.status == 'error')
+						{
+							$("#dialog_operation_error").dialog({ modal: true, height:90 });
+							return false;
+						}
+						else
+						{
+							$("#page_installed_container").hide();							
+							$("#page_not_installed_container").html(json.data);
+							$("#page_not_installed_container").show();
+							initialize_publishing();
+							$('#dialog_waiting').dialog('close');
+							$("#dialog_operation_ok").dialog({ modal: true, height:90 });
+							return true;
+						}
+					});
+				});
+		});	
+</script>
+<div class="well" id="page_installed_container">
+	<label><?php lang_line('app_app_is_installed_on'); ?>: </label>
+	<span><?php echo $campaign->fb_page_title; ?></span>
+	
+	<a 	href="<?php echo $campaign->fb_page_link; ?>?sk=app_<?php echo $campaign->application->fb_app_id; ?>" class="btn btn-primary" target="_blank">
+		<?php lang_line('app_view_app_running_on_facebook'); ?>
+	</a>
+	<a id="unistall_fanpage" action="<?php echo lang_base_url('app/uninstall_campaign_from_fanpage/'.$campaign->id); ?>" href="javascript:void(0);" class="btn btn-primary" target="_blank">
+		<?php lang_line('uninstall_app_running_on_facebook'); ?>
+	</a>	
+</div>
+<div id="page_not_installed_container" style="display:none;">&nbsp;</div>

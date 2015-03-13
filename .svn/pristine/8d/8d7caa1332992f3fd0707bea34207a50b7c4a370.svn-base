@@ -1,0 +1,735 @@
+<!-- CONTEXTUAL HELP - POPOVERS - COMMON -->
+<script type="text/javascript">
+	$(function(){
+		
+		$('.tab-content form').ajaxForm();
+		
+		// disable features
+		//$('.control-group:not(#app_features) .controls, .control-group:not(.no-version-hide) .controls').hide();
+		$('.control-group:not(.no-version-hide) .controls').hide();
+		// current version
+		var current_feature_version = $('input[name="app_features"]:checked').val();
+		
+		function change_feature_version(feature_version)
+		{
+			//$('.control-group:not(#app_features) .controls, .control-group:not(.no-version-hide) .controls').hide();
+			$('.control-group:not(.no-version-hide) .controls').hide();
+			$('.control-group .controls').next('.upgrade-text').show();
+			
+			$('.control-group.'+feature_version+' .controls').addClass('showing').show();
+			
+			$('.control-group.'+feature_version+' .controls.showing').next('.upgrade-text').hide();			
+		}
+		
+		change_feature_version(current_feature_version);
+		$('input[name="app_features"]').change(function(e){
+			var version = $('input[name="app_features"]:checked').val();
+			change_feature_version(version)
+		})		
+		 
+		$('a[rel="popover"]').popover({placement:'top'});
+		
+		// close modals
+		$('a[data-dismiss="modal"]').click(function(e) {
+			e.preventDefault();
+			$(this).parents('.modal').modal('hide');
+		})
+		
+		$.validator.messages.required = '<?php lang_line('front_error_required'); ?>';
+		$.validator.messages.email = '<?php lang_line('front_error_email'); ?>';
+		$.validator.messages.unique_email = '<?php lang_line('front_error_email_exists'); ?>';
+		$.validator.messages.equalTo = '<?php lang_line('front_error_password_match'); ?>';
+		
+		$.validator.addMethod("min_date", function(value,element) {
+			var my_date = new Date.parse(value);
+			var $compare = $($(element).attr('min_date'));
+			var compare_date = new Date.parse($compare.val())
+		    return (my_date >= compare_date);
+		}, "Please check your dates. The start date must be before the end date.");
+		
+		$.validator.addMethod("max_date", function(value,element) {
+			var my_date = new Date.parse(value);
+			var $compare = $($(element).attr('min_date'));
+			var compare_date = new Date.parse($compare.val())
+		    return (my_date <= compare_date);
+		}, "Please check your dates. The start date must be before the end date.");
+		
+		$.validator.addMethod('at_least_one', function(value,element){
+			var name = $(element).attr('name');
+			var checkboxes = $('input[name="'+name+'"]');
+			var flag = false;
+			checkboxes.each(function(ndx,e){
+				if($(this).attr('checked') == 'checked') flag = true;
+			})
+			return flag;
+		},'<?php lang_line('front_error_select_at_least_one') ?>')
+
+		$('.save-form').click(function(e) {
+			e.preventDefault();
+			var $button = $(this);
+			if($button.hasClass('disabled')) return false;
+			
+			var $form = $(this).parents('form');
+			
+			$form.validate({
+				errorElement: "p",
+				errorClass: "error",
+				validClass: "success",
+				messages: {
+					'fb_agreement': '<?php lang_line('app_error_check_agreement') ?>',
+					'app_date_close': {
+						'min_date': '<?php lang_line('app_error_close_date_grater_campaign_date') ?>'
+					},
+					'app_date_winners': {
+						'min_date': '<?php lang_line('app_error_winners_date_grater_app_close_date') ?>'
+					}					
+				},
+				errorPlacement: function(error, element) {
+
+		            if (element.attr('type') == 'checkbox') {
+		                error.appendTo(element.parent().parent());
+		            }
+		            else {
+		                error.insertAfter(element);
+		            }
+		        }
+			})
+			
+			$button.button('loading');
+			if($form.validate().form())
+			{
+				var data = $form.serialize();
+				$.post($form.attr('action'),data, function(rsp){
+					$button.button('reset');
+					var json = $.parseJSON(rsp);
+					if(json.status == 'error')
+					{
+						// show the error
+						return false
+					}
+					else
+					{
+						var current_tab_id = $form.parents('.tab-pane').attr('id');
+						var $next_tab = $('#'+current_tab_id+'-select').parent().next().find('a');
+						if($next_tab.length > 0)
+						{
+							$next_tab.removeClass('disabled');
+							$next_tab.tab('show');
+						}						
+					}
+				})				
+			}
+			else
+			{
+				$button.button('reset');
+			}			
+		});
+		
+		function update_code_list(codes)
+		{			
+			var div = $('#current_codes_div');
+			div.empty();
+			$.each(codes, function(index) {	
+				var already_used = '';
+				if (codes[index].already_used == 1)
+					already_used =  ' <?php lang_line('app_code_validator_code_used') ?>';
+					
+				div.append(codes[index].code + already_used + '<br>');
+			});
+			return false;
+		}
+		
+		$('.save-codes-form').click(function(e) {
+			e.preventDefault();
+			var $button = $(this);
+			if($button.hasClass('disabled')) return false;
+			
+			var $form = $(this).parents('form');
+			
+			$form.validate({
+				errorElement: "p",
+				errorClass: "error",
+				validClass: "success",
+				messages: {
+					'fb_agreement': '<?php lang_line('app_error_check_agreement') ?>',
+					'app_date_close': {
+						'min_date': '<?php lang_line('app_error_close_date_grater_campaign_date') ?>'
+					},
+					'app_date_winners': {
+						'min_date': '<?php lang_line('app_error_winners_date_grater_app_close_date') ?>'
+					}					
+				},
+				errorPlacement: function(error, element) {
+		            if (element.attr('type') == 'checkbox') {
+		                error.appendTo(element.parent().parent());
+		            }
+					else if (element.attr('class').indexOf("codes_file_input") >= 0) {						
+						error.appendTo(element.parent());
+		            }
+		            else {
+		                error.insertAfter(element);
+		            }
+		        }
+			})
+			
+			$button.button('loading');
+			if($form.validate().form())
+			{				
+				$.ajaxFileUpload({
+					url: $form.attr('action'), 
+					secureuri:false,
+					fileElementId:'codes_file',
+					dataType: 'json',
+					data: {
+						'tab_4_configured' : $('#tab_4_configured').val(),
+						'campaign_id': $('#campaign_id').val()
+					},
+					success: function (rsp, status) {
+						$button.button('reset');
+						if(rsp.status == 'error')
+						{
+							// show the error
+							return false
+						}
+						else
+						{
+							update_code_list(rsp.data.codes);
+							
+							var current_tab_id = $form.parents('.tab-pane').attr('id');
+							var $next_tab = $('#'+current_tab_id+'-select').parent().next().find('a');
+							if($next_tab.length > 0)
+							{
+								$next_tab.removeClass('disabled');
+								$next_tab.tab('show');
+							}						
+						}						
+					},
+					error: function (data, status, e) {
+						alert(e);
+					}
+				});
+			}
+			else
+			{
+				$button.button('reset');
+			}
+		});	
+		
+		function filter_country()
+		{
+			var language = $('#i18n_select_language').val();
+			$('#i18n_select_country option').hide();
+			$('#i18n_select_country option[lang="'+language+'"]').show();
+			
+			$('#i18n_select_country option:visible').eq(0).attr('selected','selected');
+			make_i18n();
+		}
+		function make_i18n(lang, country)
+		{
+			$('#app_language').val($('#i18n_select_language').val()) //+ '_' + $('#i18n_select_country').val());
+		}
+					
+		$('#i18n_select_language').change(filter_country)
+		$('#i18n_select_country').change(make_i18n)
+		
+		//filter_country();
+		
+		// mostrar el tab que viene desde la url, pero sólo si está habilitada
+		var url_array = document.URL.split( '#' );
+		var tab_select = '#tab-1-select';
+		if(url_array.length > 1)
+		{
+			var tab = url_array[1];
+			var tab_select_id = '#'+tab+'-select';
+			if($(tab_select_id).length > 0 && (!$(tab_select_id).hasClass('disabled'))) // existe el tab y está habilitado?
+			{
+				tab_select = tab_select_id;
+			}
+		}
+		
+		$(tab_select).tab('show')
+	})
+</script>
+
+
+<!-- MODAL MEDIA -->
+<div class="modal hide" id="modal-media">
+    <div class="modal-header">
+    	<a class="close" data-dismiss="modal">×</a>
+    	<h3><?php lang_line('app_media'); ?></h3>
+    </div>
+    <form id="form-forgot" method="post">
+	    <div class="modal-body">	    	
+			<ul id="media-list">
+			<?php 
+				if(isset($media) && $media != false) {
+					foreach($media as $filename) { 
+						if(is_array($filename)) continue; // it's a folder, don't show it
+			?>
+				<li id="file_<?php echo $filename; ?>"><a href="#" class="select-file"><?php echo $filename; ?></a> (<?php echo SUBFOLDER .'user_files/'.$campaign_id.'/'.$filename; ?>) <a href="#" fileName="<?php echo $filename; ?>" campaign_id="<?php echo $campaign_id; ?>" class="remove file_list_li_a">x</a></li>
+			<?php 
+					} 
+				}
+			?>
+			</ul>
+
+			<div id="media_fileQueue"></div>
+			
+			<input type="file" name="media_uploader" id="media_uploader" />
+			<p><a href="javascript:jQuery('#media_uploader').uploadifyClearQueue()"><?php lang_line('app_media_cancel_upload'); ?></a></p>	    	
+	    </div>
+    </form>
+</div>
+
+<script type="text/javascript">	
+	$(function(){
+		$("#media_uploader").uploadify({
+			'uploader'       : '<?php echo base_url(); ?>html/js/uploadify/uploadify.swf',
+			'script'         : '<?php echo base_url(); ?>html/js/uploadify/uploadify.php',
+			'cancelImg'      : '<?php echo base_url(); ?>html/js/uploadify/cancel.png',
+			'folder'         : '<?php echo SUBFOLDER; ?>user_files/<?php echo $campaign_id; ?>',
+			'queueID'        : 'media_fileQueue',
+			'auto'           : true,
+			'multi'          : true,
+			'buttonText'	 : '<?php lang_line('app_media_browse'); ?>',
+			'onComplete'     : function (ev,queueID,fileObj,response,data) {
+				try {
+					$li = $('<li><a href="#" class="select-file">'+fileObj.name+'</a> ('+fileObj.filePath+') <a href="#" class="remove"></a></li>');
+					$('#media-list').append($li);
+				}
+				catch(err)
+				{
+					//
+				}
+			}
+		});
+		
+		$('.file_list_li_a').on('click', function () {
+			$(this).parent().remove();
+			$.post('<?php echo base_url(); ?>app/delete_app_media',{ fileName: $(this).attr('fileName'), campaign_id: $(this).attr('campaign_id') } , function(rsp){
+				var json = $.parseJSON(rsp);
+				if(json.status == 'error')
+				{
+					alert('<?php lang_line('file_does_not_exist'); ?>');
+				}
+				else
+				{			
+					$(this).parent().remove();					
+				}
+			});
+
+			return false;
+		});
+	});
+</script>
+
+<!-- MODAL DATETIME -->
+<div class="modal hide" id="modal-datetime">
+    <div class="modal-header">
+    	<a class="close" data-dismiss="modal">×</a>
+    	<h3><?php lang_line('app_datetime'); ?></h3>
+    </div>    
+    <div class="modal-body">
+    	<input type="hidden" name="alternate_date" id="alternate_date" value ="" />
+		<input type="text" name="date_date" id="date_date" class="small dateentry" value="" />
+		<input type="text" name="date_time" id="date_time"  class="small timeentry" value=""/>
+
+    </div>
+    	    
+	<div class="modal-footer">
+		<a class="btn" href="#" data-dismiss="modal"><?php lang_line('app_cancel'); ?></a>
+		<a class="btn btn-primary" id="update-datetime" href="#"><?php lang_line('app_update'); ?></a>
+	</div>
+	
+</div>
+
+<script type="text/javascript">
+	$(function(){
+		var date_format = '<?php echo CURRENT_LANGUAGE == 'en_EN' ? 'mm-dd-yy' : 'dd-mm-yy' ?>'
+		var display_format = '<?php echo CURRENT_LANGUAGE == 'en_EN' ? 'MM-dd-yy' : 'dd-MM-yy' ?>'
+		$.timeEntry.setDefaults({show24Hours: true});
+		$('.timeentry').timeEntry();
+		//$('.dateentry').dateEntry({dateFormat: 'ymd-'});
+		$( ".dateentry" ).datepicker({
+			dateFormat : date_format,
+			altField: "#alternate_date",
+			altFormat: "yy-mm-dd"
+		});
+
+		$('.open-modal-calendar').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			var rel = $(this).attr('rel');
+			$('#modal-datetime').attr('rel',rel);
+			
+			var $input = $(rel);
+			var datetime = $input.val().split(' ');
+			
+			$('#alternate_date').val(datetime[0])
+			var display_date = Date.parse(datetime[0]);
+			$('#date_date').val(display_date.toString(display_format));
+			$('#date_time').val(datetime[1]);
+			
+			$('#modal-datetime').modal('show');
+		})
+		
+		$('#update-datetime').click(function(e) {
+			e.preventDefault();
+			var display_datetime = $('#date_date').val() + ' ' + $('#date_time').val();
+			var datetime = $('#alternate_date').val() + ' ' + $('#date_time').val();
+			
+			var $modal = $('#modal-datetime');
+			var rel = $modal.attr('rel');
+			$(rel).val(datetime);
+			$(rel+'_display').text(display_datetime);
+			$('#modal-datetime').modal('hide');
+		})
+	})
+
+</script>
+					
+
+<!-- MODAL RICHTEXT -->
+<div class="modal hide" id="modal-richtext">
+    <div class="modal-header">
+    	<a class="close" data-dismiss="modal">×</a>
+    	<h3><?php lang_line('app_edit_content'); ?></h3>
+    </div>
+    
+    <div class="modal-body">
+    	<textarea class="rich-textarea" id="rich-textarea"></textarea>
+    </div>
+    	    
+	<div class="modal-footer">
+		<a class="btn" href="#" data-dismiss="modal"><?php lang_line('app_cancel'); ?></a>
+		<a class="btn btn-primary" id="update-richtext" href="#"><?php lang_line('app_update'); ?></a>
+	</div>
+		
+</div>
+
+<!-- MODAL SIMPLE TEXT -->
+<div class="modal hide" id="modal-simpletext">
+    <div class="modal-header">
+    	<a class="close" data-dismiss="modal">×</a>
+    	<h3><?php lang_line('app_edit_content'); ?></h3>
+    </div>
+    
+    <div class="modal-body">
+    	<textarea id="simple-textarea"></textarea>
+    </div>
+    	    
+	<div class="modal-footer">
+		<a class="btn" href="#" data-dismiss="modal"><?php lang_line('app_cancel'); ?></a>
+		<a class="btn btn-primary" id="update-simpletext" href="#"><?php lang_line('app_update'); ?></a>
+	</div>
+		
+</div>
+
+
+
+		
+<script type="text/javascript">
+
+	$(function(){
+	
+		
+		
+		$('.content-type label').click(function(e) {
+			
+			var $input = $(this).find('input');
+			
+			//if($input.val() == 'default') return true;
+			
+			e.preventDefault();
+			e.stopPropagation();
+			
+			var rel = $(this).attr('rel');
+			//var $input = $(rel+'_radio');
+			switch($input.val())
+			{
+				case 'image':
+					open_modal_image(rel)
+					break;
+				case 'html':
+					open_modal_richtext(rel)
+					break;
+						
+				default:
+					var $siblings = $(this).parents('.controls').find('input[type=radio]');
+					//console.log($siblings);
+					$siblings.attr('checked',false);
+					$input.attr('checked',true);
+			}
+
+
+		})
+		
+		
+		
+		
+		$('.content-type .btn-group .btn').click(function(e) {
+			e.preventDefault();
+			//$(this).button('toggle');
+			var mode = $(this).attr('rel');
+			var parent_rel = $(this).parent().attr('rel');
+			var mode_input = $('#' + parent_rel + '_mode');
+			var target = '#' + parent_rel + '_' + mode;
+
+			var data = {'target':target, 'button':this};
+			
+			switch(mode)
+			{
+				case 'image':
+					open_modal_image(data)
+					break;
+				case 'html':
+					open_modal_richtext(data)
+					break;
+						
+				default:
+					$(this).siblings().removeClass('active');
+					$(this).addClass('active');
+					mode_input.val(mode);
+			}
+		})
+			
+		function update_option(button)
+		{
+			var $button = $(button);
+			$button.siblings().removeClass('active');
+			$button.addClass('active');
+			var parent = $button.parent();
+			var $mode = $('#'+parent.attr('rel')+'_mode');
+			$mode.val($button.attr('rel'));
+			
+		}
+		
+		function open_modal_richtext(data)
+		{
+
+			$('#rich-textarea').htmlarea('dispose');
+			$('#rich-textarea').val($(data.target).val());
+			$("#rich-textarea").htmlarea({
+				 css: "html//js//jHtmlArea//jHtmlArea.Editor.css",
+				 loaded: function()
+				 {
+				 	
+				 }
+			})
+			
+			
+			$('#modal-richtext').data(data);
+			$('#modal-richtext').modal('show');
+		}
+		
+		$('#update-richtext').click(function(e) {
+			e.preventDefault();
+			
+			var $modal = $('#modal-richtext');
+			var $target = $($modal.data('target'));
+			var $button = $($modal.data('button'));
+			
+			if($target == undefined) return false;
+			
+			// pass the value to the input
+			var htmltext = $("#rich-textarea").htmlarea("toHtmlString");
+			
+			$target.val(htmltext);
+			
+			update_option($button);
+			
+			$('#modal-richtext').modal('hide');
+			
+		})
+		
+		function open_modal_simpletext(data)
+		{
+			
+			$('#simple-textarea').val($(data.target).val());
+
+			$('#modal-simpletext').attr('rel',rel);
+			$('#modal-simpletext').modal('show');
+		}
+		
+		$('#update-simpletext').click(function(e) {
+			e.preventDefault();
+			
+			var $modal = $('#modal-simpletext');
+			var $target = $($modal.data('target'));
+			var $button = $($modal.data('button'));
+
+			$target.val($("#simple-textarea").val());
+			
+			if(button.length) update_option(button);
+
+			$('#modal-simpletext').modal('hide');
+
+		})
+		
+		
+		
+		$('.open-modal-media').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			var data = {'target':$(this).attr('rel'), 'holder': $(this).attr('rel')+'_holder'}
+			$('#modal-media').data(data);
+
+			$('#modal-media').modal('show');
+		})
+		
+		
+		function open_modal_image(data)
+		{	
+			$('#modal-media').data(data);
+			$('#modal-media').modal('show');
+		}
+		
+		
+		$('#media-list .select-file').live('click', function(e){
+			e.preventDefault();
+			var $modal = $('#modal-media');
+			var $target = $($modal.data('target'));
+			var $button = $($modal.data('button'));
+			var $holder = $($modal.data('holder'));
+			
+			// pass the value to the input
+			var filename = $(this).text();
+			$target.val(filename)
+			
+			
+			// do we need to show the image ?
+			// find the image holder and append the image
+
+			if($holder.length > 0)
+			{
+				var img = new Image();
+				img.src = '<?php echo SUBFOLDER; ?>user_files/<?php echo $campaign_id; ?>/' + filename;
+				$holder.html($(img));
+			}
+			
+			if($button.length > 0) 
+			{
+				update_option($button)
+			}
+
+			$('#modal-media').modal('hide');
+		})
+
+		
+		
+		
+	});
+</script>
+
+<!-- PREVIEW -->
+<div id="preview-window">
+	<div id="preview-top"></div>
+	<div id="preview-content" class="loading">
+		<div id="preview-canvas">
+		
+		</div>
+	</div>
+	<div id="preview-status" class="btn-group" data-toggle="buttons-radio">
+		<a class="btn preview" id="preview-no-fan" status="no_fan"><?php lang_line('app_preview_no_fan') ?></a>
+		<a class="btn preview" id="preview-teaser" status="teaser"><?php lang_line('app_preview_teaser') ?></a>
+		<a class="btn preview active" id="preview-campaign" status="campaign"><?php lang_line('app_preview_campaign') ?></a>
+		<a class="btn preview" id="preview-close" status="close"><?php lang_line('app_preview_close') ?></a>
+		<a class="btn preview" id="preview-winners" status="winners"><?php lang_line('app_preview_winners') ?></a>
+		<a class="btn btn-primary" id="preview-hide"><?php lang_line('app_preview_hide') ?></a>
+	</div>
+	<div id="preview-sidebar">
+		<div id="preview-sidebar-top"></div>
+		<div id="preview-sidebar-bottom"></div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(function(){
+		
+		function size_preview()
+		{
+			var w = $(window).width();
+			var h = $(window).height();
+			
+			var preview = $('#preview-window');
+			preview.height(h); preview.width(w);
+			var preview_top = $('#preview-top');
+			var preview_sidebar = $('#preview-sidebar');
+			var preview_sidebar_top = $('#preview-sidebar-top');
+			
+			w >=1180 ? preview_sidebar.show() : preview_sidebar.hide();
+			var top_width = w >= 1180 ? w-(200) : w-20;
+			preview_top.width(top_width);
+			preview_sidebar_top.height(h-70);
+			
+		}
+		
+		function preview()
+		{
+			$('body').css({'scroll':'none','overflow':'hidden'})
+			size_preview();
+			$(window).on('resize',size_preview);
+			
+			load_preview('campaign');
+			$('#preview-window').show(500, function(){
+				$('#preview-campaign').button('toggle')
+				
+			});
+
+		}
+		
+		var unsaved_data = null;
+		$('.form-actions .preview').click(function(e) {
+			e.preventDefault();
+			var $form = $(this).parents('form');
+			unsaved_data = $form.serializeArray();
+			preview();
+		})
+		
+		$('#preview-hide').click(function(e) {
+			e.preventDefault();
+			$('#preview-window').hide('fast');
+			$('body').css({'scroll':'auto','overflow':'auto'})
+			$(window).off('resize',size_preview);
+		})
+		
+		function load_preview(status)
+		{
+			var url = '<?php echo lang_base_url('preview/page/'.$campaign_id); ?>/'+status
+			$('#preview-canvas').load(url,unsaved_data,function(){
+				//console.log('loaded')
+			})
+		}
+		$('#preview-window .btn.preview').click(function(e) {
+			e.preventDefault();
+			var status = $(this).attr('status');
+			load_preview(status);
+		})
+		
+		
+
+	})
+	
+		
+</script>
+
+
+<!-- MODAL ALERT -->
+	<div class="modal hide" id="modal-alert">
+	    <div class="modal-header">
+	    	<a class="close" data-dismiss="modal">×</a>
+	    	<h3><?php lang_line('app_alert'); ?></h3>
+	    </div>
+	    
+	    <div class="modal-body">
+	    	
+	    </div>
+	    	    
+		<div class="modal-footer">
+			<a class="btn" href="#" data-dismiss="modal"><?php lang_line('app_cancel'); ?></a>
+			<a class="btn btn-primary" id="alert-ok" href="#"><?php lang_line('app_ok'); ?></a>
+		</div>
+			
+	</div>

@@ -1,0 +1,44 @@
+<table id="campaign_table" class="table table-striped">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th><?php lang_line('user_campaign_title'); ?></th>
+			<th><?php lang_line('user_campaign_type'); ?></th>
+			<th><?php lang_line('user_created'); ?></th>
+			<th><?php lang_line('user_campaign_init_date'); ?></th>
+			<th><?php lang_line('user_campaign_end_date'); ?></th>
+			<th><?php lang_line('user_campaign_active'); ?></th>
+			<th><?php lang_line('user_campaign_repository'); ?></th>			
+		</tr>
+	</thead>
+	<tbody>
+	<?php foreach($campaigns->query_records as $row) { ?>
+		<tr>
+			<td><?php echo $row->id; ?></td>
+			<td><a href="<?php echo lang_base_url('app/config/'.$row->id); ?>"><?php echo $row->title ?: lang_line('app_not_yet_configured',false); ?></a></td>
+			<td><?php echo $row->application->name(); ?></td>
+			<td><?php echo date(lang_line('front_format_date',false), strtotime($row->created_at)); ?></td>
+			<td><?php echo $row->application->init_date(); ?></td>
+			<td><?php echo $row->application->end_date(); ?></td>
+			<td><?php echo $row->active ? '<i class="icon-ok"></i>' : ''; ?></td>				
+			<td>
+				<?php if (!$row->in_repository) { ?>
+					<a id="in_out_repository" title="<?php lang_line('user_campaign_send_to_repository'); ?>" href="javascript:void(0);" action="<?php echo lang_base_url('app/change_repository_status/'.$row->id); ?>">
+						<i class="icon-trash"></i>
+					</a>
+				<?php } else { ?>
+					<a id="in_out_repository" title="<?php lang_line('user_campaign_bring_back_from_repository'); ?>" href="javascript:void(0);" action="<?php echo lang_base_url('app/change_repository_status/'.$row->id); ?>">
+						<i class="icon-share"></i>
+					</a>
+				<?php } ?>				
+				<?php if($show_campaign_delete) { ?>
+					<a id="delete_campaign" title="<?php lang_line('user_campaign_delete_campaign'); ?>" href="javascript:void();" action="<?php echo lang_base_url('app/delete_campaign/'.$row->id); ?>">
+						<i class="icon-remove"></i>
+					</a>
+				<?php } ?>		
+			</td>			
+		</tr>
+	<?php } ?>
+	</tbody>
+</table>
+<?php echo $pagination; ?>

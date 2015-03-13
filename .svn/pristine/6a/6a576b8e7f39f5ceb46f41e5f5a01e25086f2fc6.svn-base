@@ -1,0 +1,166 @@
+<div id="comments-holder">
+	<form action="<?php echo base_url(); ?>/apps/<?php echo $campaign->application->type() ?>/save_comment" method="post" id="form-comment" class="contest-form">
+		<input type="hidden" name="campaign_id" value="<?php echo $campaign->id; ?>" />
+		<input type="hidden" name="user_id" id="comment_user_id" value="-1" />
+		<img id="comment_user_img" src="" />
+		<textarea name="comment" class="required" id="comment_comment"></textarea>
+		<div class="actions">
+			<input type="button" id="comment-submit" class="disabled btn publish btn-small btn-primary" value="<?php lang_line('app_publish'); ?>" />
+		</div>
+	</form>
+	
+	<div id="comment-list">
+		<div id="sample-comment" class="comment-comment" style="display:none">
+			<div class="comment-image-holder">
+				<img src="" />
+			</div>
+			<div class="comment-text-holder">
+				<div class="comment-text"></div>
+				<!-- <fb:like href="<?php echo $campaign->fb_page_link; ?>" send="false" layout="button_count" width="420" show_faces="false" font=""></fb:like> -->
+				<div class="comment-options">
+					<a href="#" class="report-content" rel=""><?php lang_line('app_report_comment') ?></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$fb_status.on('on_ready', function(){
+		get_status(new Array('publish_stream','email'))
+	})
+
+	$fb_status.on('on_user', function(){
+		//console.log('on user comment');
+		if($fb_status.user)
+		{
+			$('#comment_user_id').val($fb_status.user.id);
+			$('#comment_user_img').attr('src','http://graph.facebook.com/'+$fb_status.user.id+'/picture');
+		}
+		$('#comment-submit').removeClass('disabled');
+	})
+	
+	$fb_status.on('on_status',function(){
+		//console.log('on_status_comments');
+		if($fb_status.status != true) $('#comment-submit').removeClass('disabled');
+	})
+
+	function submit_comment()
+	{
+		//console.log('submiting');
+		if( ! $fb_status.status)
+		{
+			<?php 
+			if($analytics) {
+			?>		
+				_gaq.push(['_trackEvent', 'User Action', 'Login/Permission Request', 'Comment']);
+			<?php	
+				}
+			?>
+			get_login(
+				new Array('publish_stream','email'),
+				submit_comment,
+				function(){
+					alert('No permissions');
+				}
+			)
+			return false;
+		}
+		
+		var $form_comment = $('#form-comment');
+		// login ok, submit the form
+		if( ! $form_comment.validate().form() ) return false;
+		
+		<?php 
+		if($analytics) {
+		?>		
+			_gaq.push(['_trackEvent', 'User Action', 'Submit comment', 'Comment']);
+		<?php	
+			}
+		?>
+		
+		$('#comment_user_id').val($fb_status.response.userID)
+		
+		var data = $form_comment.serialize();
+		$.post($form_comment.attr('action'),data, function(rsp){
+			if(rsp.status == 'ok')
+			{
+				var wallPost = {
+				    link: '<?php echo ($campaign->fb_page_link .'?sk=app_'.$campaign->application->fb_app_id ) ?>',
+				    name: '<?php echo $campaign->application->app_wall_title; ?>',
+				    caption: $fb_status.user.name +' <?php lang_line('app_posted_on') ?> ' + '<?php echo $campaign->fb_page_title; ?>',
+				    description:'<?php echo $campaign->application->app_wall_description; ?>',
+				    picture: '<?php echo $campaign->media('app_avatar', false); ?>'
+				};
+				feed(wallPost);
+				var data = {facebook_user_id:$('#comment_user_id').val(),content:$('#comment_comment').val(),'id':rsp.message};
+				add_comment(data,true);
+				//console.log('feeded');
+				
+			}
+		},'json');
+		
+	}
+	
+	
+	$('#comment-submit').click(function(e) {
+		e.preventDefault();
+		if($(this).hasClass('disabled')) return false;
+		
+		submit_comment();
+	})
+
+	function add_comment(data,prepend)
+	{
+		var $comment_list = $('#comment-list');
+		var $new_comment = $('#sample-comment').clone();
+		var $picture = $new_comment.find('img');
+		var $report = $new_comment.find('.report-content');
+		$picture.attr('src','http://graph.facebook.com/'+data.facebook_user_id+'/picture');
+		$new_comment.find('.comment-text').text(data.content)
+		
+		if(data.reported == 1) {
+			$report.detach();
+		}
+		else
+		{
+			$report.attr('rel',data.id);
+		}
+		
+		if(prepend)
+		{
+			$comment_list.prepend($new_comment);
+		}
+		else
+		{
+			$comment_list.append($new_comment);
+		}
+		
+		$new_comment.show('fast');
+	}
+
+	$(function(){
+		//console.log('getting_comments');
+		// get the comments list
+		var url = '<?php echo base_url(); ?>/apps/<?php echo $campaign->application->type() ?>/get_comments';
+		$.post(url,{'campaign_id':<?php echo $campaign->id ?>},function(list) {
+			
+			$.each(list,function(ndx,item){
+				add_comment(item)
+			})
+
+		},'json')
+		
+		$('.report-content').live('click',function(e) {
+			e.preventDefault();
+			var $anchor = $(this);
+			var url = '<?php echo base_url(); ?>/apps/<?php echo $campaign->application->type() ?>/report_content/'+$anchor.attr('rel');
+			$.post(url,{'campaign_id':<?php echo $campaign->id ?>},function(rsp) {
+				$anchor.after('<span class="reported-content"><?php lang_line('app_content_reported') ?></span>');
+				$anchor.detach();
+			},'json')
+		})
+	})
+
+
+</script>

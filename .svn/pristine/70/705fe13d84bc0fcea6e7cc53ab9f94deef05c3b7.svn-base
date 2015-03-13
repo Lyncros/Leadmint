@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title><?php echo $template->title; ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+
+    <link href="<?php echo base_url(); ?>html/css/bootstrap.css" rel="stylesheet">
+    <link href="<?php echo base_url(); ?>html/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="<?php echo base_url(); ?>html/css/leadmint.css" rel="stylesheet">
+	<link href="<?php echo base_url(); ?>html/css/jquery-ui-1.8.23.custom.css" rel="stylesheet">
+	
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script src="<?php echo base_url(); ?>html/js/jquery-1.8.0.min.js"></script>
+    <script src="<?php echo base_url(); ?>html/js/jquery-ui-1.8.23.custom.min.js"></script>
+	<script src="<?php echo base_url(); ?>html/js/jquery.validate.js"></script>
+    <script src="<?php echo base_url(); ?>html/js/date.js"></script>
+	<script src="<?php echo base_url(); ?>html/js/ajaxfileupload/ajaxfileupload.js"></script>
+	<script src="<?php echo base_url(); ?>html/js/jquery-fileimput.js"></script>
+	 
+	
+<?php echo $template->metadata; ?>
+	
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="<?php echo base_url(); ?>html/ico/favicon.ico">
+
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/html/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/html/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="/html/ico/apple-touch-icon-57-precomposed.png">
+  </head>
+  <body>
+	
+	 <div id="fb-root"></div>
+        <?php echo $template->header; ?>
+       
+
+    <div class="container">
+	   <?php echo $template->body; ?>
+     
+    </div> <!-- /container -->
+	
+	
+	<?php echo $template->footer; ?>
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="<?php echo base_url(); ?>/html/js/bootstrap.js"></script>
+    
+	<div id="dialog_operation_error" title="<?php lang_line('dialog_operation_error_title') ?>" style="display: none;">
+	   <p><?php lang_line('dialog_operation_error_text') ?></p>
+	</div>
+	<div id="dialog_operation_ok" title="<?php lang_line('dialog_operation_ok_title') ?>" style="display: none;">
+	   <p><?php lang_line('dialog_operation_ok_text') ?></p>
+	</div>
+	<div id="dialog_waiting" title="<?php lang_line('dialog_operation_waiting_title') ?>" style="display: none;">
+	   <p><?php lang_line('dialog_operation_waiting_text') ?></p>
+	</div>
+  </body>
+  <script type="text/javascript">
+      (function() {
+        var tf = document.createElement('script'); tf.type = 'text/javascript'; tf.async = true;
+        tf.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'truefan.proyecto404.com/js/widget.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(tf, s);
+      })();
+</script>
+</html>

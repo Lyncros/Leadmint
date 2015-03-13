@@ -1,0 +1,89 @@
+	<h1><?php lang_line('user_register'); ?></h1>
+	
+	<form class="well" id="form-register" method="post">
+	
+		<label><?php lang_line('user_firstname'); ?></label>
+		<input type="text" class="span3 required" name="firstname" value="<?php echo $ruser->firstname ?>"> 
+		
+		<label><?php lang_line('user_lastname'); ?></label>
+		<input type="text" class="span3 required" name="lastname" value="<?php echo $ruser->lastname ?>">
+		
+		<label><?php lang_line('user_email'); ?></label>
+		<input type="text" class="span3 required email unique_email" name="email" value="<?php echo $ruser->email; ?>"> 
+		
+		<input type="hidden" name="language" value="<?php echo $ruser->language; ?>" id="i18n_language" />
+		<label><?php lang_line('user_language'); ?></label>
+		<?php echo $language_select; ?>
+		
+		<div style="display:none">
+		<label><?php lang_line('user_country'); ?></label>
+		<?php echo $country_select; ?>
+		</div>
+		
+		<label><?php lang_line('user_password'); ?></label>
+		<input type="password" class="span3 required" name="password" id="password">
+		
+		<label><?php lang_line('user_password_confirmation'); ?></label>
+		<input type="password" class="span3 required" name="confirmation" equalTo="#password">
+		
+		<div>
+		<button class="btn btn-success" type="submit"><?php lang_line('user_submit'); ?></button>
+		</div>
+	</form>
+	
+	<script type="text/javascript">
+		
+		function filter_country()
+		{
+			var language = $('#i18n_select_language').val();
+			$('#i18n_select_country option').hide();
+			$('#i18n_select_country option[lang="'+language+'"]').show();
+			
+			$('#i18n_select_country option:visible').eq(0).attr('selected','selected');
+			make_i18n();
+		}
+		function make_i18n(lang, country)
+		{
+			//$('#i18n_language').val($('#i18n_select_language').val() + '_' + $('#i18n_select_country').val());
+			$('#i18n_language').val($('#i18n_select_language').val());
+		}
+		
+		$(function(){
+			// filter the countries
+			filter_country();
+			
+			$('#i18n_select_language').change(filter_country)
+			//$('#i18n_select_country').change(make_i18n)
+		})
+	
+		$.validator.messages.required = '<?php lang_line('front_error_required'); ?>';
+		$.validator.messages.email = '<?php lang_line('front_error_email'); ?>';
+		$.validator.messages.unique_email = '<?php lang_line('front_error_email_exists'); ?>';
+		$.validator.messages.equalTo = '<?php lang_line('front_error_password_match'); ?>';
+
+		$('#form-register').validate({
+			errorElement: "p",
+			errorClass: "error",
+			validClass: "success",
+			rules: {
+				'email': {
+					remote: {
+						url:'<?php echo base_url('user/check_email'); ?>',
+						type:'post',
+						data: {
+							record_id: function() {
+					            return $("input[name=id]").val();
+					          }
+
+						}
+					},
+				}
+			},
+			messages: {
+				'email': {
+					remote: '<?php lang_line('front_error_email_exists'); ?>',
+				}
+			}
+		});
+	
+	</script>

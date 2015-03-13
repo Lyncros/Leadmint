@@ -1,0 +1,4 @@
+<?php 
+$config['title'] = 'LeadMint';
+$config['email_no_replay'] = 'santiagofs@gmail.com';
+$config['email_contact'] = 'santiagofs@gmail.com';

@@ -1,0 +1,30 @@
+.contest-form p {width:400px; overflow: hidden; margin-bottom: 0px; min-height: 54px; margin-left: 5px; font-family: arial; font-size: 14px; vertical-align:middle;}
+.contest-form p.left {float: left;}
+.contest-form p.right {float: right;}
+.contest-form p.p_birthday select {margin-top:11px;}
+.contest-form p.p_country select {width:235px; margin-top:11px;}
+
+.contest-form  label, .contest-form .radio label.label_gender {float:left; width:140px; padding-right: 10px; vertical-align:middle;margin-top: 12px; color: black; font-size:100%;}
+.contest-form  label.error {width:auto; margin-left:150px; color:red; font-size: 10px; margin-top: 2px;}
+
+.contest-form  input, .contest-form textarea, .contest-form select, .contest-form .radio label {font-family: Verdana, Arial; font-size: 12px; color: #333; margin-bottom: 0px;}
+.contest-form .radio label {font-size: 12px; line-height: 24px; width: auto; display: inline-block; vertical-align: baseline;}
+
+
+.contest-form input[type="text"] {width: 235px; padding: 3px 4px; border: 1px solid #CCC; border-bottom: 1px double grey; border-top: 1px double #DFDFE0; border-left: 1px double #C9CACA; border-right: 1px double #C9CACA; line-height: 16px; height: 30px; font-size: 16px; font-family: arial;
+border-radius:5px; -moz-border-radius:5px;  /* Firefox 3.6 and earlier */}
+
+.contest-form input[type="submit"], .contest-form input[type="button"] { border: none; line-height: 16px; padding: 4px 5px; cursor: pointer; color: transparent;}
+
+.contest-form .participate { background: url(/html/img/participar.png) 0 0 no-repeat; width: 300px; height: 46px; margin-right: 260px; margin-top: 5px; }
+
+.contest-form .publish { background: url(/html/img/Publicar.png) 0 0 no-repeat; width: 244px; height: 38px;}
+
+.contest-form textarea {width: 800px; padding:3px 4px; border: 1px solid #CCC; resize: none; height: 64px; margin-bottom: 5px;}
+
+.contest-form .checkbox input[type="checkbox"], .contest-form .radio input[type="radio"] {float: none; margin-left: 0;}
+.contest-form .actions {text-align: right; clear:both; }
+.contest-form .radio {padding-left: 0px;}
+
+.contest-form label input, .contest-form label textarea, .contest-form label select {display: inline-block;}
+#comments-holder {padding:10px 0px; border-top: 1px solid #CCC; margin-top: 15px;}

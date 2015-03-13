@@ -1,0 +1,169 @@
+<form class="form-horizontal well">	
+	<?php if($props->app_embedded_wall->value) { ?>
+	<fieldset>
+		<legend><?php lang_line('app_manage_comments'); ?></legend>
+		<ul>
+		<?php foreach($comments as $comment) { ?>
+			<li><?php echo $comment->content; ?> <a href="#" rel="<?php echo $comment->id; ?>" class="delete-comment"><?php lang_line('app_delete_comment'); ?></a> <a href="#" rel="<?php echo $comment->id; ?>" class="aprove-comment"><?php lang_line('app_aprove_comment') ?></a></li>
+		<?php } ?>
+		</ul>
+		<script type="text/javascript">
+			$(function() { 
+				$('.delete-comment').click(function(e) {
+					e.preventDefault();
+					var $anchor = $(this);
+					var $li = $anchor.parent();
+					var url = '<?php echo lang_site_url('app/aprove_content'); ?>/' + $anchor.attr('rel') + '/0';
+					$('#modal-alert .modal-body').text('<?php lang_line('app_comments_confirm_delete') ?>');
+					$('#modal-alert #alert-ok').unbind();
+					$('#modal-alert #alert-ok').click(function(e) {
+						e.preventDefault();
+						$('#modal-alert').modal('hide');
+					
+						$.post(url, 
+							function(rsp)
+							{
+								$li.detach();
+							},
+							'json'
+						);
+					})
+					$('#modal-alert').modal('show');
+				})
+				
+				$('.aprove-comment').click(function(e) {
+					e.preventDefault();
+					var $anchor = $(this);
+					var $li = $anchor.parent();
+					var url = '<?php echo lang_site_url('app/aprove_content'); ?>/' + $anchor.attr('rel');
+					$('#modal-alert .modal-body').text('<?php lang_line('app_comments_confirm_aprove') ?>');
+					$('#modal-alert #alert-ok').unbind();
+					$('#modal-alert #alert-ok').click(function(e) {
+						e.preventDefault();
+						$('#modal-alert').modal('hide');
+					
+						$.post(url, 
+							function(rsp)
+							{
+								$li.detach();
+							},
+							'json'
+						);
+					})
+					$('#modal-alert').modal('show');
+				})
+			})
+		</script>
+	</fieldset>
+	<?php } ?>
+	
+	<fieldset>
+		<legend><?php lang_line('app_users_winners_help'); ?></legend>
+		
+		<div class="control-group <?php echo $props->app_winners_extract_mode->css_versions(); ?>">
+			<label class="control-label" for="app_timezone"> 
+				<a data-content="<?php echo $props->app_winners_extract_mode->help ?>" rel="popover" class="icon-question-sign" href="#" data-original-title="<?php echo $props->app_winners_extract_mode->label; ?>"></a> 
+				<?php echo $props->app_winners_extract_mode->label; ?>
+			</label>
+
+			<div class="controls content-type">
+				<input type="hidden" name="app_winners_extract_mode" id="app_winners_extract_mode" value="<?php echo $props->app_winners_extract_mode->value; ?>" />
+				
+				<div class="btn-group" rel="app_winners_extract" style="float:left">
+					<?php $available_modes =  $campaign->application->app_extract_winners_modes ?>
+					<?php if(in_array('ballot', $available_modes)) { ?>
+					<button class="btn <?php echo $props->app_winners_extract_mode->value == 'ballot' ? 'active' : '' ?>" rel="ballot"><?php lang_line('app_winners_ballot'); ?></button>
+					<?php } ?>
+					<?php if(in_array('vote', $available_modes)) { ?>
+					<button class="btn <?php echo $props->app_winners_extract_mode->value == 'ballot' ? 'active' : '' ?>" rel="vote"><?php lang_line('app_winners_vote'); ?></button>
+					<?php } ?>
+					<?php if(in_array('customize', $available_modes)) { ?>
+					<button class="btn <?php echo $props->app_winners_extract_mode->value == 'customize' ? 'active' : '' ?>" rel="customize"><?php lang_line('app_winners_customize'); ?></button>
+					<?php } ?>
+				</div>
+				
+				<input type="text" class="input-small required" id="app_winners_qty" name="app_winners_qty" value="20">
+				
+				<a href="#" id="extract-winners" class="btn btn-primary" style="margin-left:10px;"><?php lang_line('app_extract_winners') ?></a>
+				
+			</div>
+
+		</div>
+				
+	</fieldset>
+	
+	<fieldset>
+		<legend><?php lang_line('app_winners_list'); ?></legend>
+		<li id="user-sample" style="display:none">
+			<span class="position"></span><span class="username"></span> - <span class="email"></span><!-- <a href="#" class="btn dismiss-user"><?php lang_line('app_dismiss_winner') ?></a> -->
+		</li>
+		<ul id="winners-list" class="<?php echo $props->app_winners_extract_mode->value; ?>">
+		
+		</ul>
+		
+	</fieldset>
+	
+	<fieldset>
+		<legend><?php lang_line('app_users_download'); ?></legend>
+		<div>
+			<a class="btn" id="user_download_xls" href="<?php echo lang_base_url('app/export_users/'.$campaign->id.'/xls'); ?>"><?php lang_line('app_users_download_xls') ?></a>
+			<!-- <a class="btn" id="user_download_csv"><?php lang_line('app_users_download_csv') ?></a> -->
+		</div>
+		
+	</fieldset>
+</form>
+
+
+<script type="text/javascript">
+	$(function(){
+		$('#extract-winners').click(function(e) {
+			e.preventDefault();
+			$('#modal-alert .modal-body').text('<?php lang_line('app_winners_override_alert') ?>');
+			$('#modal-alert #alert-ok').unbind();
+			$('#modal-alert #alert-ok').click(function(e) {
+				e.preventDefault();
+				$('#modal-alert').modal('hide');
+				var data = {
+					'app_winners_extract_mode': $('#app_winners_extract_mode').val(),
+					'app_winners_qty': $('#app_winners_qty').val()
+				};
+				$.post(
+					'<?php echo lang_base_url('app/extract_winners/'.$campaign->id); ?>',
+					data,
+					function(rsp)
+					{
+						show_winners(rsp);
+					},
+					'json'
+				);
+			})
+			$('#modal-alert').modal('show');
+		})
+		
+		function show_winners(json)
+		{
+			var list = $('#winners-list');
+			list.empty();
+			var sample = $('#user-sample');
+			$.each(json,function(i,e){
+				var clone = sample.clone();
+				clone.find('.username').text(e.name)
+				clone.find('.email').text(e.email)
+				list.append(clone);
+				clone.show();
+			})
+		}
+		
+		// get the winners list, if any
+		$.post(
+			'<?php echo lang_base_url('app/get_winners_list/'.$campaign->id); ?>',
+			{},
+			function(rsp)
+			{
+				show_winners(rsp);
+			},
+			'json'
+		);
+		
+	})
+</script>

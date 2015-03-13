@@ -1,0 +1,8 @@
+<?php  // prefix all entries with the file name to avoid language conflicts
+$lang['app_user_requirement_male'] = 'Male';
+$lang['app_user_requirement_female'] = 'Female';
+
+// DATES FORMATS
+// las claves se rigen por los formatos de fecha en idioma ingles
+$lang['m-d-y'] = 'm-d-y';
+$lang['m-d-Y'] = 'm-d-Y';

@@ -1,0 +1,62 @@
+	<div id="payment-logic">
+		<?php 
+			$current_page = $this->uri->uri_string();
+			$current_language_page = site_url(CURRENT_LANGUAGE.'/'.$current_page);
+			// strip #tab from url if present
+			$array = explode('#', $current_language_page);
+			$callback = $array[0].$campaign->application->after_payment_ok;
+			
+			$message = $this->session->flashdata('payment_error');
+			
+			if($message)
+			{
+		?>
+			<div class="alert">
+				<?php echo $message; ?>
+			</div>
+		<?php	
+			}
+		?>
+	<!--
+	<a href="<?php echo base_url(); ?>payment_dummy/test_ok/<?php echo $campaign->get_payment_token() ?>" class="btn btn-primary">Test Payment OK</a>
+		
+		<a href="<?php echo base_url(); ?>payment_dummy/test_error/<?php echo $campaign->get_payment_token() ?>" class="btn btn-secondary">Test Payment Error</a>
+-->
+		<div id="activation-request-status">
+		<?php 
+			if($campaign->activation_requested) { 
+				lang_line('app_configured_wait_activation');
+			}
+			else
+			{
+		?>
+				<a href="#" id="activation-request" class="btn btn-primary"><?php lang_line('app_configured_request_activation'); ?></a>
+		<?php
+			}
+		?>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(function(){
+			$('#activation-request').click(function(e) {
+				e.preventDefault();
+				$.post(
+					'<?php echo lang_base_url('app/request_activation/'.$campaign->id); ?>',
+					function(rsp)
+					{
+						var json = $.parseJSON(rsp);
+						if(json.status == 'error')
+						{
+							// show the error
+							return false
+						}
+						else
+						{
+							$('#activation-request-status').html('<?php lang_line('app_configured_wait_activation'); ?>');
+							
+						}
+					}
+				)
+			})
+		})
+	</script>

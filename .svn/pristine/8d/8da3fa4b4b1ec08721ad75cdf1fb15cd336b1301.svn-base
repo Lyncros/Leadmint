@@ -1,0 +1,4 @@
+<h1>HOME HEADER</h1>
+
+<a class="btn btn-large btn-primary" href="<?php echo lang_base_url('app/install/1'); ?>">Install Sweepstakes</a>
+<a class="btn btn-large btn-primary" href="<?php echo lang_base_url('app/install/4'); ?>">Install Code Validator</a>

@@ -1,0 +1,92 @@
+<?php 
+	$current_page = $this->uri->uri_string();
+	$current_language_page = site_url(CURRENT_LANGUAGE.'/'.$current_page);
+	$languages = $this->config->item('languages');
+	$lang_options = array();
+	foreach($languages as $key => $language)
+	{
+		$lang_options [site_url($key.'/'.$current_page)] = $language;
+	}
+	$select_language = form_dropdown('select_language',$lang_options, $current_language_page, 'id="select_language"');
+?>
+	
+	<div class="navbar navbar-fixed-top" id="header">
+      <div class="navbar-inner">
+        <div class="container">
+
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><?php echo $this->config->item('title', 'front'); ?></a>
+          <div class="nav-collapse">
+            <ul class="nav" id="main-nav">
+              <li><a href="/page_1">Page 1</a></li>
+              <li><a href="/page_2">Page 2</a></li>
+              <li><a href="#contact"><?php lang_line('front_contact'); ?></a></li>
+              <?php if($user->id != 0) { ?>
+			  <li class="dropdown">
+	              <a href="#" data-toggle="dropdown" class="dropdown-toggle"><?php lang_line('user_menu_title'); ?><b class="caret"></b></a>
+	              <ul class="dropdown-menu">
+			          <li><a href="/user/dashboard"><?php lang_line('current_campaigns') ?></a></li>
+			          <li><a href="/user/repository"><?php lang_line('campaigns_in_repository') ?></a></li>
+			      </ul>
+              </li>
+			  <?php } ?>
+			  <?php if($user->is_super) { ?>
+              <li class="dropdown">
+	              <a href="#" data-toggle="dropdown" class="dropdown-toggle">Super <b class="caret"></b></a>
+	              <ul class="dropdown-menu">
+			          <li><a href="/super/users"><?php lang_line('super_users') ?></a></li>
+			          <li><a href="/super/campaigns"><?php lang_line('super_campaigns') ?></a></li>
+			        </ul>
+              </li>
+              <?php } ?>
+            </ul>
+            <script type="text/javascript">
+            	$(function(){
+            		$('#header #main-nav a').each(function(i,e)
+            		{
+            			if($(e).attr('href')== '/<?php echo $current_page; ?>')
+            			{
+            				$(e).parent().addClass('active');
+            			}
+            		});
+            	})
+            </script>
+            
+            <p class="navbar-text pull-right">
+            <?php if(!$user->valid()) { // ocultar el combo de idiomas si el usuario está logueado ?>
+            <?php echo $select_language; ?>
+            <script type="text/javascript">
+            	$('#select_language').change(function(e){
+            		top.location.href = $(this).val();
+            	})
+            </script>
+           	<?php } ?>
+           	<?php if($user->logged()) { ?>
+            	<?php lang_line('front_logged_as'); ?> <a href="#"><?php echo $user->firstname; ?></a> <a href="/user/logout"><?php lang_line('front_logout'); ?></a>
+            <?php } else { ?>
+            	<a href="<?php echo lang_site_url('user/login'); ?>"><?php lang_line('front_login'); ?></a> <?php lang_line('front_or'); ?> <a href="<?php echo lang_site_url('user/register'); ?>"><?php lang_line('front_register'); ?></a>
+            <?php } ?>
+            </p>
+          </div><!--/.nav-collapse -->
+
+        </div>
+        <div class="container">
+        </div>
+      </div>
+    </div>
+    
+	<?php if($user->logged()) { ?>
+	<div id="user-nav">
+		<div class="container">
+		<ul class="nav nav-pills">
+		<li><a href="<?php echo lang_site_url('user/dashboard'); ?>"><?php lang_line('user_nav_dashboard'); ?></a></li>
+		<li><a href="<?php echo lang_site_url('user/profile'); ?>"><?php lang_line('user_nav_profile'); ?></a></li>
+		<li><a href="<?php echo lang_site_url('user/account'); ?>"><?php lang_line('user_nav_account'); ?></a></li>
+		</ul>
+		</div>
+	</div>
+  <?php } ?>

@@ -1,0 +1,51 @@
+<?php  // prefix all entries with the file name to avoid language conflicts
+
+$lang['front_sample_text'] = 'Español sample text';
+
+// form errors
+// Representan errores genéricos en los formularios de Leadmint,
+// NO aplica a los formularios de configuración de campañas
+$lang['front_error_required'] = 'Por favor, complete el campo';
+$lang['front_error_email'] = 'Por favor, ingrese un email válido';
+$lang['front_error_email_exists'] = "El email ingresado ya existe ";
+$lang['front_error_password_match'] = 'La validación debe coincidir con la contraseña ingresada';
+$lang['front_error_select_at_least_one'] = 'Para continuar debés seleccionar al menos un item';
+$lang['front_error_email_not_exists'] = "El mail ingresado no pertenece a ningún usuario registrado";
+$lang['user_email_reset_password_ajax_ok'] = "El mail para recuperar el password se envió correctamente.";
+
+// Header
+$lang['front_register'] = 'Registrate';
+$lang['front_login'] = 'Accedé';
+$lang['front_or'] = 'o';
+$lang['front_promos'] = 'Promos';
+$lang['front_sweepstakes'] = 'Sorteos';
+$lang['front_exchange'] = 'Canje de Cupones';
+$lang['front_contact'] = 'Contáctanos';
+$lang['front_logged_as'] = 'Logueado como';
+$lang['front_logout'] = 'Salir';
+$lang['user_menu_title'] = 'Usuario';
+$lang['current_campaigns'] = 'Campañas actuales';
+$lang['campaigns_in_repository'] = 'Historial de campañas';
+
+
+//Campaign details / FILTROS
+$lang['front_filter_app_type'] = 'Tipo de campaña';
+$lang['front_filter_show_inactive'] = 'Mostrar campañas inactivas';
+$lang['front_filter_filter'] = 'Filtrar';
+$lang['front_filter_reset'] = 'Resetear filtro';
+$lang['front_filter_all_values'] = 'Todas las opciones';
+$lang['front_filter_firstname'] = 'Filtrar Nombre';
+$lang['front_filter_lastname'] = 'Filtrar Apellido';
+$lang['front_filter_email'] = 'Filtrar Email';
+$lang['front_filter_super_only'] = 'Sólo SuperAdministradores';
+$lang['front_filter_show_inactive_users'] = 'Mostrar Inactivos';
+$lang['front_filter_user_name'] = 'Filtrar Usuario';
+$lang['front_filter_show_only_invalid'] = 'Mostrar sólo Inválidas';
+$lang['front_filter_user'] = 'Filtrar Usuario';
+
+$lang['front_total_records'] = 'Cantidad de registros';
+
+$lang['front_format_date'] = 'd-m-Y';
+$lang['front_format_date_time'] = 'd-m-Y H:i';
+
+$lang['front_form_cancel'] = 'Cancelar';
